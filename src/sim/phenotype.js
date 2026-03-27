@@ -20,10 +20,10 @@ export const derivePhenotype = (genome) => {
 
   const diversity = 1 - genome.monochromeTendency
   const hueB = genome.hueA + (genome.hueB - genome.hueA) * diversity * 0.7
-  const satA = lerp(0.14, 0.56, genome.satA)
-  const satB = lerp(0.1, 0.48, genome.satB)
-  const valA = lerp(0.58, 0.88, genome.valA)
-  const valB = lerp(0.5, 0.82, genome.valB)
+  const satA = lerp(0.02, 0.56, genome.satA)
+  const satB = lerp(0.02, 0.48, genome.satB)
+  const valA = lerp(0.08, 0.88, genome.valA)
+  const valB = lerp(0.06, 0.82, genome.valB)
   const baseA = hsvToRgb(genome.hueA, satA, valA)
   const baseB = hsvToRgb(hueB, satB, valB)
   const eyeTone = hsvToRgb((genome.hueA + 0.52 + genome.accentAmount * 0.14) % 1, 0.22 + genome.accentAmount * 0.38, 0.92)
