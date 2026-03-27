@@ -13,10 +13,12 @@ export const createRandomGenome = (rng) => {
 
   if (rng.chance(0.7)) {
     const darkBrown = rng.pick([
-      { h: 0.06, s: 0.26, v: 0.2 },
-      { h: 0.08, s: 0.32, v: 0.24 },
-      { h: 0.02, s: 0.22, v: 0.18 },
-      { h: 0.0, s: 0.08, v: 0.1 },
+      { h: 0.11, s: 0.22, v: 0.16 },
+      { h: 0.09, s: 0.28, v: 0.22 },
+      { h: 0.07, s: 0.18, v: 0.14 },
+      { h: 0.0, s: 0.06, v: 0.1 },
+      { h: 0.15, s: 0.2, v: 0.19 },
+      { h: 0.58, s: 0.08, v: 0.2 },
     ])
     genome.hueA = clamp(darkBrown.h + rng.normal(0, 0.015))
     genome.hueB = clamp(darkBrown.h + rng.normal(0, 0.02))
@@ -80,11 +82,13 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) 
   const likelyNatural = rng.chance(0.86)
   if (likelyNatural) {
     const darkBrown = rng.pick([
-      { h: 0.06, s: 0.26, v: 0.2 },
-      { h: 0.08, s: 0.3, v: 0.24 },
-      { h: 0.02, s: 0.18, v: 0.16 },
+      { h: 0.11, s: 0.22, v: 0.16 },
+      { h: 0.09, s: 0.28, v: 0.22 },
+      { h: 0.07, s: 0.18, v: 0.14 },
       { h: 0.0, s: 0.06, v: 0.1 },
-      { h: 0.98, s: 0.32, v: 0.24 },
+      { h: 0.98, s: 0.24, v: 0.2 },
+      { h: 0.58, s: 0.08, v: 0.2 },
+      { h: 0.15, s: 0.2, v: 0.19 },
     ])
     child.hueA = clamp(child.hueA * 0.45 + darkBrown.h * 0.55 + rng.normal(0, 0.01))
     child.hueB = clamp(child.hueB * 0.4 + darkBrown.h * 0.6 + rng.normal(0, 0.012))

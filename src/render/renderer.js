@@ -14,22 +14,15 @@ const getBackdrop = () => {
 export const renderWorld = ({ ctx, world, width, height, pointer }) => {
   ctx.clearRect(0, 0, width, height)
 
-  const sky = ctx.createLinearGradient(0, 0, 0, height)
-  sky.addColorStop(0, '#4d623f')
-  sky.addColorStop(0.35, '#768b57')
-  sky.addColorStop(0.78, '#1d261b')
-  sky.addColorStop(1, '#121711')
-  ctx.fillStyle = sky
+  ctx.fillStyle = '#111411'
   ctx.fillRect(0, 0, width, height)
 
   const backdrop = getBackdrop()
   if (backdrop?.complete) {
-    ctx.globalAlpha = 0.34
+    ctx.globalAlpha = 1
     ctx.drawImage(backdrop, 0, 0, width, height)
     ctx.globalAlpha = 1
   }
-
-  drawBackdrop(ctx, width, height)
   drawBottomShade(ctx, width, height)
   const groundY = height * 0.71
 
@@ -56,26 +49,6 @@ export const renderWorld = ({ ctx, world, width, height, pointer }) => {
       ctx.stroke()
     }
   }
-}
-
-const drawBackdrop = (ctx, width, height) => {
-  ctx.save()
-  ctx.globalAlpha = 0.25
-  for (let index = 0; index < 5; index += 1) {
-    const y = height * (0.18 + index * 0.08)
-    ctx.fillStyle = `rgba(15, 18, 13, ${0.1 + index * 0.03})`
-    ctx.beginPath()
-    ctx.moveTo(0, y + 42)
-    for (let x = 0; x <= width + 80; x += 80) {
-      const peak = Math.sin(x * 0.01 + index * 0.7) * 18 + Math.cos(x * 0.005 + index) * 12
-      ctx.lineTo(x, y + peak)
-    }
-    ctx.lineTo(width, height)
-    ctx.lineTo(0, height)
-    ctx.closePath()
-    ctx.fill()
-  }
-  ctx.restore()
 }
 
 const drawBottomShade = (ctx, width, height) => {
