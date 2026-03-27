@@ -1,4 +1,5 @@
 {
+  "_comment": "Edit this file to tune Crevo. Lower colorMutationMultiplier/colorDrift/colorMeanPull to keep children closer to parent color. Raise bottomShade mid/end alpha to darken the lower scene. edgeAvoidRatio makes creatures stay away from the outer left/right edges.",
   "visuals": {
     "background": {
       "image": "crevo-background.png",
@@ -13,6 +14,7 @@
       "edgeAvoidRatio": 0.1
     },
     "bottomShade": {
+      "_comment": "Increase midAlpha/endAlpha a little to make the bottom darker.",
       "startRatio": 0.64,
       "fillStartRatio": 0.6,
       "midAlpha": 0.22,
@@ -25,16 +27,18 @@
     }
   },
   "genetics": {
+    "_comment": "For slower color change: lower colorMutationMultiplier, colorDrift, and colorMeanPull. colorLockToParent is the strongest 'keep kids the same color family' knob — raise it toward 1.",
     "targetPopulation": 30,
     "hardCap": 72,
     "macroMutationChanceBase": 0.002,
     "macroMutationChanceScale": 0.003,
     "macroMutationMultiplier": 12,
-    "colorMutationMultiplier": 0.08,
-    "colorDrift": 0.08,
+    "colorMutationMultiplier": 0.04,
+    "colorDrift": 0.04,
+    "colorMeanPull": 0.004,
+    "colorLockToParent": 0.92,
     "heightMutationMultiplier": 0.45,
     "heightDrift": 0.45,
-    "colorMeanPull": 0.01,
     "defaultMeanPull": 0.04,
     "monochromeFloor": 0.7,
     "bodySquarenessDamping": 0.35,

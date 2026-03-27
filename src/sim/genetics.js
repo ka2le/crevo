@@ -52,16 +52,32 @@ export const computeGeneAverages = (creatures) => {
   }, {})
 }
 
+const inheritColorGene = (parentValue, meanValue, sigma, meanPull, lockToParent, rng) => {
+  const drifted = parentValue + rng.normal(0, sigma) + (meanValue - parentValue) * meanPull
+  return clamp(parentValue * lockToParent + drifted * (1 - lockToParent))
+}
+
 export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) => {
   const child = {}
   for (const key of TRAIT_KEYS) {
     const sigmaBase = MUTATION_SIGMA[key] * mutationStrength
-    const sigma = COLOR_KEYS.has(key)
-      ? sigmaBase * config.genetics.colorMutationMultiplier * config.genetics.colorDrift
-      : key === 'height'
-        ? sigmaBase * config.genetics.heightMutationMultiplier * config.genetics.heightDrift
-        : sigmaBase
-    const meanPull = COLOR_KEYS.has(key) ? config.genetics.colorMeanPull : config.genetics.defaultMeanPull
+    if (COLOR_KEYS.has(key)) {
+      const sigma = sigmaBase * config.genetics.colorMutationMultiplier * config.genetics.colorDrift
+      child[key] = inheritColorGene(
+        parentGenome[key],
+        averages[key],
+        sigma,
+        config.genetics.colorMeanPull * mutationStrength,
+        config.genetics.colorLockToParent,
+        rng,
+      )
+      continue
+    }
+
+    const sigma = key === 'height'
+      ? sigmaBase * config.genetics.heightMutationMultiplier * config.genetics.heightDrift
+      : sigmaBase
+    const meanPull = config.genetics.defaultMeanPull
     let value = parentGenome[key] + rng.normal(0, sigma)
     value += (averages[key] - parentGenome[key]) * meanPull * mutationStrength
     child[key] = clamp(value)
@@ -82,17 +98,13 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) 
   const likelyNatural = rng.chance(config.genetics.naturalPaletteChance)
   if (likelyNatural) {
     const darkBrown = rng.pick(config.genetics.naturalPalettes)
-    child.hueA = clamp(child.hueA * 0.45 + darkBrown.h * 0.55 + rng.normal(0, 0.01))
-    child.hueB = clamp(child.hueB * 0.4 + darkBrown.h * 0.6 + rng.normal(0, 0.012))
-    child.satA = clamp(child.satA * 0.5 + darkBrown.s * 0.5)
-    child.satB = clamp(child.satB * 0.5 + darkBrown.s * 0.45)
-    child.valA = clamp(child.valA * 0.45 + darkBrown.v * 0.55)
-    child.valB = clamp(child.valB * 0.45 + darkBrown.v * 0.5)
-  } else {
-    child.satA = clamp(child.satA * 0.82 + 0.1)
-    child.satB = clamp(child.satB * 0.8 + 0.1)
-    child.valA = clamp(child.valA * 0.72 + 0.2)
-    child.valB = clamp(child.valB * 0.72 + 0.18)
+    const blend = 1 - config.genetics.colorLockToParent
+    child.hueA = clamp(child.hueA * (1 - blend) + darkBrown.h * blend + rng.normal(0, 0.002))
+    child.hueB = clamp(child.hueB * (1 - blend) + darkBrown.h * blend + rng.normal(0, 0.0025))
+    child.satA = clamp(child.satA * (1 - blend) + darkBrown.s * blend)
+    child.satB = clamp(child.satB * (1 - blend) + darkBrown.s * blend * 0.92)
+    child.valA = clamp(child.valA * (1 - blend) + darkBrown.v * blend)
+    child.valB = clamp(child.valB * (1 - blend) + darkBrown.v * blend * 0.92)
   }
 
   return child

@@ -42,67 +42,69 @@ function App() {
 
   return (
     <main className="app-shell">
-      <header className="top-bar">
-        <div className="control-group left">
-          <button className="control button-control" onClick={togglePause}>
-            {controls.paused ? 'play' : 'pause'}
-          </button>
-          <Slider
-            label={`mut ${formatPercent(controls.mutationStrength)}`}
-            value={controls.mutationStrength}
-            min={0.01}
-            max={0.4}
-            step={0.01}
-            onChange={(value) => setControl('mutationStrength', value)}
-          />
-          <Slider
-            label={`birth ${formatPercent(controls.birthRate)}`}
-            value={controls.birthRate}
-            min={0.1}
-            max={1.6}
-            step={0.05}
-            onChange={(value) => setControl('birthRate', value)}
-          />
-          <Slider
-            label={`spd ${controls.speed.toFixed(1)}x`}
-            value={controls.speed}
-            min={0.4}
-            max={3}
-            step={0.1}
-            onChange={(value) => setControl('speed', value)}
-          />
-        </div>
+      <div className="rotatable-page">
+        <header className="top-bar">
+          <div className="control-group left">
+            <button className="control button-control" onClick={togglePause}>
+              {controls.paused ? 'play' : 'pause'}
+            </button>
+            <Slider
+              label={`mut ${formatPercent(controls.mutationStrength)}`}
+              value={controls.mutationStrength}
+              min={0.01}
+              max={0.4}
+              step={0.01}
+              onChange={(value) => setControl('mutationStrength', value)}
+            />
+            <Slider
+              label={`birth ${formatPercent(controls.birthRate)}`}
+              value={controls.birthRate}
+              min={0.1}
+              max={1.6}
+              step={0.05}
+              onChange={(value) => setControl('birthRate', value)}
+            />
+            <Slider
+              label={`spd ${controls.speed.toFixed(1)}x`}
+              value={controls.speed}
+              min={0.4}
+              max={3}
+              step={0.1}
+              onChange={(value) => setControl('speed', value)}
+            />
+          </div>
 
-        <div className="control-group center stats-strip">
-          <StatPill label="pop" value={stats.population} />
-          <StatPill label="born" value={stats.births} />
-          <StatPill label="lost" value={stats.deaths} />
-          <StatPill label="gen" value={stats.maxGeneration} />
-          <StatPill label="mode" value={mode} />
-        </div>
+          <div className="control-group center stats-strip">
+            <StatPill label="pop" value={stats.population} />
+            <StatPill label="born" value={stats.births} />
+            <StatPill label="lost" value={stats.deaths} />
+            <StatPill label="gen" value={stats.maxGeneration} />
+            <StatPill label="mode" value={mode} />
+          </div>
 
-        <div className="control-group right">
-          <button className="control button-control" onClick={() => setMode(mode === 'multiply' ? 'explode' : 'multiply')}>
-            {mode === 'multiply' ? 'switch: boom' : 'switch: clone'}
-          </button>
-          <button className="control button-control accent" onClick={spawnAverageCreature}>
-            avg
-          </button>
-          <button className="control button-control accent" onClick={spawnRandomCreature}>
-            rnd
-          </button>
-          <button className="control button-control" onClick={resetWorld}>
-            reset
-          </button>
-        </div>
-      </header>
+          <div className="control-group right">
+            <button className="control button-control" onClick={() => setMode(mode === 'multiply' ? 'explode' : 'multiply')}>
+              {mode === 'multiply' ? 'switch: boom' : 'switch: clone'}
+            </button>
+            <button className="control button-control accent" onClick={spawnAverageCreature}>
+              avg
+            </button>
+            <button className="control button-control accent" onClick={spawnRandomCreature}>
+              rnd
+            </button>
+            <button className="control button-control" onClick={resetWorld}>
+              reset
+            </button>
+          </div>
+        </header>
 
-      <GameCanvas />
+        <GameCanvas />
+      </div>
 
       <aside className="portrait-hint" aria-hidden="true">
         <div className="portrait-card">
           <span>portrait</span>
-          <p>rotate to landscape for the proper framing</p>
+          <p>already rotated — landscape still frames it best</p>
         </div>
       </aside>
     </main>
