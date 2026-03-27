@@ -30,8 +30,7 @@ export const renderWorld = ({ ctx, world, width, height, pointer }) => {
   }
 
   drawBackdrop(ctx, width, height)
-  const groundY = height * 0.78
-  drawGround(ctx, width, height, groundY)
+  const groundY = height * 0.71
 
   for (const creature of world.creatures) {
     drawCreature(ctx, creature, groundY)
@@ -78,20 +77,3 @@ const drawBackdrop = (ctx, width, height) => {
   ctx.restore()
 }
 
-const drawGround = (ctx, width, height, groundY) => {
-  const soil = ctx.createLinearGradient(0, groundY - 30, 0, height)
-  soil.addColorStop(0, 'rgba(53, 60, 32, 0.8)')
-  soil.addColorStop(0.22, 'rgba(50, 42, 29, 0.92)')
-  soil.addColorStop(1, 'rgba(17, 17, 13, 1)')
-  ctx.fillStyle = soil
-  ctx.fillRect(0, groundY - 18, width, height - groundY + 18)
-
-  ctx.strokeStyle = 'rgba(192, 227, 139, 0.2)'
-  ctx.lineWidth = 2
-  ctx.beginPath()
-  ctx.moveTo(0, groundY)
-  for (let x = 0; x <= width; x += 22) {
-    ctx.lineTo(x, groundY + Math.sin(x * 0.02) * 4)
-  }
-  ctx.stroke()
-}

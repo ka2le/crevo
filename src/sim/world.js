@@ -11,12 +11,12 @@ const createIdFactory = () => {
   return () => `creature-${index++}`
 }
 
-const makeCreature = ({ id, genome, x, generation, bornAt, facing, rng }) => ({
+const makeCreature = ({ id, genome, x, generation, bornAt, facing, rng, worldHeight }) => ({
   id,
   genome,
   phenotype: derivePhenotype(genome),
   x,
-  y: 0,
+  y: rng.range(-worldHeight * 0.05, worldHeight * 0.05),
   facing,
   walkPhase: rng.next() * Math.PI * 2,
   wobblePhase: rng.next() * Math.PI * 2,
@@ -68,6 +68,7 @@ export const createWorld = ({ width = 1280, height = 720, seed = 'crevo' } = {})
         bornAt: 0,
         facing: rng.chance(0.5) ? -1 : 1,
         rng,
+        worldHeight: height,
       }),
     )
   }
@@ -94,6 +95,7 @@ const spawnChild = ({ world, parent, controls, x, generationBoost = 1 }) => {
     bornAt: world.time,
     facing: world.rng.chance(0.5) ? -1 : 1,
     rng: world.rng,
+    worldHeight: world.height,
   })
   creature.highlight = 1
   creature.age = -1.2
@@ -122,7 +124,7 @@ export const explodeCreature = (world, creatureId) => {
   if (!target) return false
   target.alive = false
   target.deathBurst = 1
-  spawnParticleBurst(world, target.x, world.height * 0.72, target.phenotype.colors.abdomen)
+  spawnParticleBurst(world, target.x, world.height * 0.71 + target.y, target.phenotype.colors.abdomen)
   world.stats.deaths += 1
   return true
 }
@@ -162,6 +164,12 @@ const updateCreature = (creature, world, controls, dt) => {
   const speed = lerp(18, 66, creature.genome.stepRate) * controls.speed
   creature.x += creature.facing * speed * dt
 
+  const laneCenter = world.height * 0.71
+  const laneVariance = world.height * 0.1
+  const desiredY = Math.sin(creature.x * 0.01 + creature.wobblePhase * 0.35) * laneVariance * 0.45 + Math.cos(creature.x * 0.004 + creature.generation) * laneVariance * 0.2
+  creature.y += (desiredY - creature.y) * Math.min(1, dt * 1.8)
+  creature.y = clamp(creature.y, -laneVariance, laneVariance)
+
   if (creature.x < margin) {
     creature.x = margin
     creature.facing = 1
@@ -177,7 +185,7 @@ const updateCreature = (creature, world, controls, dt) => {
   const deathRisk = clamp(ageRatio * ageRatio * 0.018 + Math.max(0, populationPressure - 1) * 0.0028, 0, 0.15)
   if (creature.age > 6 && world.rng.chance(deathRisk * dt * 60)) {
     creature.alive = false
-    spawnParticleBurst(world, creature.x, world.height * 0.72, creature.phenotype.colors.thorax)
+    spawnParticleBurst(world, creature.x, laneCenter + creature.y, creature.phenotype.colors.thorax)
     world.stats.deaths += 1
   }
 }
@@ -233,6 +241,7 @@ export const createAverageCreature = (world) => {
     bornAt: world.time,
     facing: world.rng.chance(0.5) ? -1 : 1,
     rng: world.rng,
+    worldHeight: world.height,
   })
   creature.highlight = 1
   world.creatures.push(creature)
@@ -248,6 +257,7 @@ export const createRandomCreature = (world) => {
     bornAt: world.time,
     facing: world.rng.chance(0.5) ? -1 : 1,
     rng: world.rng,
+    worldHeight: world.height,
   })
   creature.highlight = 1
   world.creatures.push(creature)

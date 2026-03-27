@@ -2,7 +2,7 @@ import { hsvToRgb, rgbToString } from '../utils/color.js'
 import { lerp } from '../utils/math.js'
 
 export const derivePhenotype = (genome) => {
-  const height = lerp(42, 118, genome.height)
+  const height = lerp(84, 236, genome.height)
   const thoraxRadius = height * lerp(0.16, 0.25, genome.thoraxSize)
   const abdomenRadius = height * lerp(0.17, 0.29, genome.abdomenSize)
   const headRadius = height * lerp(0.11, 0.22, genome.headSize)

@@ -6,7 +6,7 @@ export const drawCreature = (ctx, creature, groundY) => {
   const lift = Math.max(0, Math.sin(creature.walkPhase) * phenotype.stepLiftPx)
 
   ctx.save()
-  ctx.translate(creature.x, groundY - bob)
+  ctx.translate(creature.x, groundY + creature.y - bob)
   ctx.scale(creature.facing * scaleIn, scaleIn)
   ctx.rotate(phenotype.upright + sway * 0.005)
 
