@@ -18,3 +18,8 @@ export const hitTestCreature = (world, x, y) => {
 
   return best
 }
+
+export const mapPortraitPointer = (clientX, clientY, width) => ({
+  x: clientY,
+  y: width - clientX,
+})

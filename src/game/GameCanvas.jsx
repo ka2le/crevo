@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { useCrevoStore } from './store.js'
 import { renderWorld } from '../render/renderer.js'
-import { hitTestCreature } from '../input/hitTest.js'
+import { hitTestCreature, mapPortraitPointer } from '../input/hitTest.js'
 
 const HOLD_MS = 360
 const TOUCH_CLICK_GUARD_MS = 700
+const PORTRAIT_QUERY = '(max-width: 760px) and (orientation: portrait)'
 
 export function GameCanvas() {
   const canvasRef = useRef(null)
@@ -13,14 +14,16 @@ export function GameCanvas() {
   const animationFrameRef = useRef(null)
   const lastTimeRef = useRef(0)
   const ignoreClickUntilRef = useRef(0)
+  const portraitRef = useRef(false)
 
   useEffect(() => {
     const resize = () => {
       const canvas = canvasRef.current
       if (!canvas) return
-      const portraitRotated = window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches
-      const width = portraitRotated ? window.innerHeight : window.innerWidth
-      const height = portraitRotated ? window.innerWidth : window.innerHeight
+      const portraitRotated = window.matchMedia(PORTRAIT_QUERY).matches
+      portraitRef.current = portraitRotated
+      const width = portraitRotated ? window.innerWidth : window.innerWidth
+      const height = portraitRotated ? window.innerHeight : window.innerHeight
       const ratio = window.devicePixelRatio || 1
       canvas.width = width * ratio
       canvas.height = height * ratio
@@ -28,7 +31,7 @@ export function GameCanvas() {
       canvas.style.height = `${height}px`
       const ctx = canvas.getContext('2d')
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
-      useCrevoStore.getState().resize(width, height)
+      useCrevoStore.getState().resize(portraitRotated ? height : width, portraitRotated ? width : height)
     }
 
     resize()
@@ -51,6 +54,7 @@ export function GameCanvas() {
           width: canvas.clientWidth,
           height: canvas.clientHeight,
           pointer: state.pointer,
+          portrait: portraitRef.current,
         })
       }
       animationFrameRef.current = requestAnimationFrame(frame)
@@ -60,10 +64,18 @@ export function GameCanvas() {
     return () => cancelAnimationFrame(animationFrameRef.current)
   }, [])
 
+  const mapPointer = (clientX, clientY) => {
+    const state = useCrevoStore.getState()
+    if (!portraitRef.current) return { x: clientX, y: clientY, world: state.world }
+    const mapped = mapPortraitPointer(clientX, clientY, window.innerWidth)
+    return { x: mapped.x, y: mapped.y, world: state.world }
+  }
+
   const updatePointer = (clientX, clientY) => {
     const state = useCrevoStore.getState()
-    const hovered = hitTestCreature(state.world, clientX, clientY)
-    state.setPointer({ x: clientX, y: clientY, hovered })
+    const mapped = mapPointer(clientX, clientY)
+    const hovered = hitTestCreature(mapped.world, mapped.x, mapped.y)
+    state.setPointer({ x: mapped.x, y: mapped.y, hovered })
     return hovered
   }
 

@@ -12,9 +12,22 @@ const getBackdrop = () => {
   return cachedBackdrop
 }
 
-export const renderWorld = ({ ctx, world, width, height, pointer }) => {
+export const renderWorld = ({ ctx, world, width, height, pointer, portrait = false }) => {
   ctx.clearRect(0, 0, width, height)
 
+  if (portrait) {
+    ctx.save()
+    ctx.translate(width, 0)
+    ctx.rotate(Math.PI / 2)
+    drawScene(ctx, world, height, width)
+    ctx.restore()
+    return
+  }
+
+  drawScene(ctx, world, width, height)
+}
+
+const drawScene = (ctx, world, width, height) => {
   ctx.fillStyle = config.visuals.background.baseFill
   ctx.fillRect(0, 0, width, height)
 
