@@ -8,24 +8,24 @@ body,
 
 :root {
   color-scheme: dark;
-  --ui-gap: 12px;
-  --ui-pad-y: max(12px, env(safe-area-inset-top));
-  --ui-pad-x: 16px;
-  --group-gap: 8px;
-  --group-pad-y: 8px;
-  --group-pad-x: 12px;
+  --ui-gap: 8px;
+  --ui-pad-y: max(8px, env(safe-area-inset-top));
+  --ui-pad-x: 10px;
+  --group-gap: 5px;
+  --group-pad-y: 5px;
+  --group-pad-x: 7px;
   --group-radius: 999px;
-  --button-pad-y: 9px;
-  --button-pad-x: 14px;
-  --button-font: 17px;
-  --slider-font: 12px;
-  --slider-width: 116px;
-  --stat-min-width: 68px;
-  --stat-pad-y: 6px;
-  --stat-pad-x: 10px;
-  --stat-radius: 14px;
-  --stat-label-font: 10px;
-  --stat-value-font: 18px;
+  --button-pad-y: 5px;
+  --button-pad-x: 8px;
+  --button-font: 11px;
+  --slider-font: 8px;
+  --slider-width: 58px;
+  --stat-min-width: 38px;
+  --stat-pad-y: 4px;
+  --stat-pad-x: 6px;
+  --stat-radius: 10px;
+  --stat-label-font: 7px;
+  --stat-value-font: 11px;
   --portrait-card-width: min(78vw, 320px);
   --portrait-card-pad-y: 12px;
   --portrait-card-pad-x: 14px;
@@ -63,8 +63,8 @@ body,
   right: 0;
   z-index: 3;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: center;
   gap: var(--ui-gap);
   padding: var(--ui-pad-y) var(--ui-pad-x) 0;
   pointer-events: none;
@@ -89,6 +89,7 @@ body,
   pointer-events: auto;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--group-gap);
   padding: var(--group-pad-y) var(--group-pad-x);
   border-radius: var(--group-radius);
@@ -127,11 +128,11 @@ body,
 
 .slider-control {
   display: grid;
-  gap: 3px;
+  gap: 2px;
   font-size: var(--slider-font);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: lowercase;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .slider-control input {
@@ -144,7 +145,7 @@ body,
   padding: var(--stat-pad-y) var(--stat-pad-x);
   border-radius: var(--stat-radius);
   display: grid;
-  gap: 2px;
+  gap: 1px;
   text-transform: lowercase;
   box-sizing: border-box;
 }
@@ -153,7 +154,7 @@ body,
 .portrait-card span {
   font-size: var(--stat-label-font);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: rgba(244, 240, 221, 0.72);
 }
 
@@ -179,65 +180,58 @@ body,
   font-size: var(--portrait-card-font);
 }
 
-@media (max-width: 1180px) {
+@media (min-width: 1000px) {
   :root {
     --ui-gap: 10px;
-    --ui-pad-x: 12px;
+    --ui-pad-y: max(10px, env(safe-area-inset-top));
+    --ui-pad-x: 14px;
     --group-gap: 6px;
-    --group-pad-y: 7px;
+    --group-pad-y: 6px;
     --group-pad-x: 10px;
-    --button-pad-y: 8px;
-    --button-pad-x: 12px;
-    --button-font: 15px;
-    --slider-font: 11px;
-    --slider-width: 96px;
-    --stat-min-width: 60px;
+    --button-pad-y: 7px;
+    --button-pad-x: 11px;
+    --button-font: 13px;
+    --slider-font: 10px;
+    --slider-width: 84px;
+    --stat-min-width: 50px;
     --stat-pad-y: 5px;
     --stat-pad-x: 8px;
+    --stat-label-font: 8px;
+    --stat-value-font: 14px;
+  }
+
+  .top-bar {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .control-group {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1400px) {
+  :root {
+    --ui-gap: 12px;
+    --ui-pad-y: max(12px, env(safe-area-inset-top));
+    --ui-pad-x: 16px;
+    --group-gap: 8px;
+    --group-pad-y: 8px;
+    --group-pad-x: 12px;
+    --button-pad-y: 9px;
+    --button-pad-x: 14px;
+    --button-font: 15px;
+    --slider-font: 11px;
+    --slider-width: 100px;
+    --stat-min-width: 60px;
+    --stat-pad-y: 6px;
+    --stat-pad-x: 10px;
     --stat-label-font: 9px;
     --stat-value-font: 16px;
   }
 }
 
-@media (max-width: 980px) {
-  .top-bar {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 760px) {
-  :root {
-    --ui-gap: 6px;
-    --ui-pad-y: max(6px, env(safe-area-inset-top));
-    --ui-pad-x: 6px;
-    --group-gap: 4px;
-    --group-pad-y: 4px;
-    --group-pad-x: 6px;
-    --button-pad-y: 5px;
-    --button-pad-x: 8px;
-    --button-font: 11px;
-    --slider-font: 9px;
-    --slider-width: 62px;
-    --stat-min-width: 40px;
-    --stat-pad-y: 4px;
-    --stat-pad-x: 6px;
-    --stat-radius: 10px;
-    --stat-label-font: 7px;
-    --stat-value-font: 12px;
-  }
-}
-
-@media (max-width: 760px) and (orientation: portrait) {
-  .portrait-hint {
-    display: flex;
-    inset: auto 0 0 0;
-    justify-content: center;
-    padding: 0 8px calc(max(8px, env(safe-area-inset-bottom)) + 6px);
-    z-index: 5;
-  }
-}
-
-@media (max-width: 760px) and (orientation: landscape) {
+@media (max-width: 900px) and (orientation: landscape) {
   :root {
     --ui-gap: 4px;
     --ui-pad-y: max(4px, env(safe-area-inset-top));
@@ -248,21 +242,23 @@ body,
     --button-pad-y: 4px;
     --button-pad-x: 6px;
     --button-font: 10px;
-    --slider-font: 8px;
-    --slider-width: 52px;
-    --stat-min-width: 34px;
+    --slider-font: 7px;
+    --slider-width: 48px;
+    --stat-min-width: 32px;
     --stat-pad-y: 3px;
     --stat-pad-x: 5px;
     --stat-radius: 8px;
     --stat-label-font: 6px;
     --stat-value-font: 10px;
   }
+}
 
-  .top-bar {
-    align-items: flex-start;
-  }
-
-  .control-group {
-    flex-shrink: 1;
+@media (max-width: 760px) and (orientation: portrait) {
+  .portrait-hint {
+    display: flex;
+    inset: auto 0 0 0;
+    justify-content: center;
+    padding: 0 8px calc(max(8px, env(safe-area-inset-bottom)) + 6px);
+    z-index: 5;
   }
 }
