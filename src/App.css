@@ -8,24 +8,24 @@ body,
 
 :root {
   color-scheme: dark;
-  --ui-gap: 4px;
-  --ui-pad-y: max(4px, env(safe-area-inset-top));
-  --ui-pad-x: 4px;
-  --group-gap: 3px;
-  --group-pad-y: 3px;
-  --group-pad-x: 5px;
+  --ui-gap: 8px;
+  --ui-pad-y: max(8px, env(safe-area-inset-top));
+  --ui-pad-x: 10px;
+  --group-gap: 5px;
+  --group-pad-y: 5px;
+  --group-pad-x: 7px;
   --group-radius: 999px;
-  --button-pad-y: 4px;
-  --button-pad-x: 6px;
-  --button-font: 10px;
-  --slider-font: 7px;
-  --slider-width: 48px;
-  --stat-min-width: 32px;
-  --stat-pad-y: 3px;
-  --stat-pad-x: 5px;
-  --stat-radius: 8px;
-  --stat-label-font: 6px;
-  --stat-value-font: 10px;
+  --button-pad-y: 5px;
+  --button-pad-x: 8px;
+  --button-font: 11px;
+  --slider-font: 8px;
+  --slider-width: 58px;
+  --stat-min-width: 38px;
+  --stat-pad-y: 4px;
+  --stat-pad-x: 6px;
+  --stat-radius: 10px;
+  --stat-label-font: 7px;
+  --stat-value-font: 11px;
   --portrait-card-width: min(78vw, 320px);
   --portrait-card-pad-y: 12px;
   --portrait-card-pad-x: 14px;
@@ -180,7 +180,7 @@ body,
   font-size: var(--portrait-card-font);
 }
 
-@media (min-width: 1000px) and (min-height: 650px) {
+@media (min-width: 1000px) {
   :root {
     --ui-gap: 10px;
     --ui-pad-y: max(10px, env(safe-area-inset-top));
@@ -210,7 +210,7 @@ body,
   }
 }
 
-@media (min-width: 1400px) and (min-height: 800px) {
+@media (min-width: 1400px) {
   :root {
     --ui-gap: 12px;
     --ui-pad-y: max(12px, env(safe-area-inset-top));
@@ -231,47 +231,25 @@ body,
   }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-width: 900px) and (orientation: landscape) {
   :root {
-    --ui-gap: 2px;
-    --ui-pad-y: max(2px, env(safe-area-inset-top));
-    --ui-pad-x: 2px;
-    --group-gap: 2px;
-    --group-pad-y: 2px;
-    --group-pad-x: 3px;
-    --button-pad-y: 2px;
-    --button-pad-x: 4px;
-    --button-font: 8px;
-    --slider-font: 6px;
-    --slider-width: 36px;
-    --stat-min-width: 24px;
-    --stat-pad-y: 2px;
-    --stat-pad-x: 3px;
-    --stat-radius: 6px;
-    --stat-label-font: 5px;
-    --stat-value-font: 8px;
-  }
-}
-
-@media (max-height: 420px) and (orientation: landscape) {
-  :root {
-    --ui-gap: 1px;
-    --ui-pad-y: max(1px, env(safe-area-inset-top));
-    --ui-pad-x: 1px;
-    --group-gap: 1px;
-    --group-pad-y: 1px;
-    --group-pad-x: 2px;
-    --button-pad-y: 1px;
-    --button-pad-x: 3px;
-    --button-font: 7px;
-    --slider-font: 5px;
-    --slider-width: 28px;
-    --stat-min-width: 20px;
-    --stat-pad-y: 1px;
-    --stat-pad-x: 2px;
-    --stat-radius: 5px;
-    --stat-label-font: 4px;
-    --stat-value-font: 7px;
+    --ui-gap: 4px;
+    --ui-pad-y: max(4px, env(safe-area-inset-top));
+    --ui-pad-x: 4px;
+    --group-gap: 3px;
+    --group-pad-y: 3px;
+    --group-pad-x: 5px;
+    --button-pad-y: 4px;
+    --button-pad-x: 6px;
+    --button-font: 10px;
+    --slider-font: 7px;
+    --slider-width: 48px;
+    --stat-min-width: 32px;
+    --stat-pad-y: 3px;
+    --stat-pad-x: 5px;
+    --stat-radius: 8px;
+    --stat-label-font: 6px;
+    --stat-value-font: 10px;
   }
 }
 
