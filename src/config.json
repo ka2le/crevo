@@ -1,0 +1,61 @@
+{
+  "visuals": {
+    "background": {
+      "image": "crevo-background.png",
+      "baseFill": "#111411"
+    },
+    "lane": {
+      "heightRatio": 0.71,
+      "varianceRatio": 0.1,
+      "driftSin": 0.45,
+      "driftCos": 0.2,
+      "driftResponse": 1.8
+    },
+    "bottomShade": {
+      "startRatio": 0.64,
+      "fillStartRatio": 0.6,
+      "midAlpha": 0.18,
+      "endAlpha": 0.44
+    },
+    "highlight": {
+      "edgeGlowAlpha": 0.32,
+      "edgeGlowBoost": 0.48,
+      "edgeGlowBlur": 16
+    }
+  },
+  "genetics": {
+    "targetPopulation": 30,
+    "hardCap": 72,
+    "macroMutationChanceBase": 0.002,
+    "macroMutationChanceScale": 0.003,
+    "macroMutationMultiplier": 12,
+    "colorMutationMultiplier": 0.22,
+    "heightMutationMultiplier": 0.45,
+    "colorMeanPull": 0.02,
+    "defaultMeanPull": 0.04,
+    "monochromeFloor": 0.7,
+    "bodySquarenessDamping": 0.35,
+    "heightParentBlend": 0.2,
+    "hairDampingMin": 0.7,
+    "hairDampingMax": 1.01,
+    "naturalPaletteChance": 0.9,
+    "naturalPalettes": [
+      { "h": 0.11, "s": 0.22, "v": 0.16 },
+      { "h": 0.09, "s": 0.28, "v": 0.22 },
+      { "h": 0.07, "s": 0.18, "v": 0.14 },
+      { "h": 0.0, "s": 0.06, "v": 0.1 },
+      { "h": 0.98, "s": 0.24, "v": 0.2 },
+      { "h": 0.58, "s": 0.08, "v": 0.2 },
+      { "h": 0.15, "s": 0.2, "v": 0.19 }
+    ],
+    "macroMutationTraits": [
+      "hairiness",
+      "antennaFluff",
+      "eyeStyle",
+      "lashiness",
+      "skinTexture",
+      "accentAmount",
+      "armMuscle"
+    ]
+  }
+}

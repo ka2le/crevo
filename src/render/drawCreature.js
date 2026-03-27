@@ -1,3 +1,5 @@
+import config from '../config.js'
+
 export const drawCreature = (ctx, creature, groundY) => {
   const { phenotype } = creature
   const bob = Math.sin(creature.walkPhase) * phenotype.bouncePx
@@ -22,9 +24,9 @@ export const drawCreature = (ctx, creature, groundY) => {
 
   drawLegPair(ctx, phenotype, pelvisY, liftA, liftB)
 
-  drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen)
+  drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen, creature.highlight)
   drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.9, phenotype.skinTexture, creature.id.length)
-  drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02, phenotype.thoraxRadius * 0.92, phenotype.bodySquareness * 0.85, phenotype.colors.thorax)
+  drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02, phenotype.thoraxRadius * 0.92, phenotype.bodySquareness * 0.85, phenotype.colors.thorax, creature.highlight)
   drawTextureDots(ctx, 0, thoraxY, phenotype.thoraxRadius * 0.84, phenotype.skinTexture, creature.generation + 11)
 
   drawNeckBridge(ctx, phenotype, thoraxY, headY)
@@ -33,19 +35,12 @@ export const drawCreature = (ctx, creature, groundY) => {
     drawArms(ctx, phenotype, shoulderY, liftA, liftB)
   }
 
-  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * 0.9, phenotype.bodySquareness * 0.5, phenotype.colors.thorax)
+  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * 0.9, phenotype.bodySquareness * 0.5, phenotype.colors.thorax, creature.highlight)
   drawFace(ctx, phenotype, headY)
   drawAntennae(ctx, phenotype, headY)
 
   if (phenotype.hairiness > 0.28) {
     drawBodyHair(ctx, phenotype, abdomenY, thoraxY)
-  }
-
-  if (creature.highlight > 0) {
-    ctx.strokeStyle = `rgba(244, 240, 221, ${0.15 + creature.highlight * 0.5})`
-    ctx.lineWidth = 2
-    ellipse(ctx, 0, thoraxY, phenotype.thoraxRadius * 2.2, phenotype.height * 0.82)
-    ctx.stroke()
   }
 
   ctx.restore()
@@ -71,7 +66,22 @@ const roundedRect = (ctx, x, y, width, height, radius) => {
   ctx.closePath()
 }
 
-const drawBodySegment = (ctx, x, y, rx, ry, square, fill) => {
+const drawBodySegment = (ctx, x, y, rx, ry, square, fill, highlight = 0) => {
+  if (highlight > 0) {
+    ctx.save()
+    ctx.shadowColor = `rgba(244, 240, 221, ${config.visuals.highlight.edgeGlowAlpha + highlight * config.visuals.highlight.edgeGlowBoost})`
+    ctx.shadowBlur = config.visuals.highlight.edgeGlowBlur * highlight
+    ctx.strokeStyle = `rgba(244, 240, 221, ${0.08 + highlight * 0.24})`
+    ctx.lineWidth = 1.5
+    if (square > 0.16) {
+      roundedRect(ctx, x, y, rx * 2, ry * 2, Math.min(rx, ry) * (0.9 - square))
+    } else {
+      ellipse(ctx, x, y, rx, ry)
+    }
+    ctx.stroke()
+    ctx.restore()
+  }
+
   ctx.fillStyle = fill
   if (square > 0.16) {
     roundedRect(ctx, x, y, rx * 2, ry * 2, Math.min(rx, ry) * (0.9 - square))
@@ -83,7 +93,6 @@ const drawBodySegment = (ctx, x, y, rx, ry, square, fill) => {
 
 const drawTextureDots = (ctx, x, y, radius, amount, seed) => {
   if (amount < 0.08) return
-  ctx.fillStyle = ctx.fillStyle = 'rgba(255,255,255,0)'
   const dots = 4 + Math.floor(amount * 12)
   for (let i = 0; i < dots; i += 1) {
     const angle = (i / dots) * Math.PI * 2 + seed * 0.13

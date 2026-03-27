@@ -1,5 +1,6 @@
 import { AVERAGE_GENOME, MUTATION_SIGMA, TRAIT_KEYS } from '../data/traitRanges.js'
 import { clamp } from '../utils/math.js'
+import config from '../config.js'
 
 export const createAverageGenome = () => ({ ...AVERAGE_GENOME })
 
@@ -12,14 +13,7 @@ export const createRandomGenome = (rng) => {
   }
 
   if (rng.chance(0.7)) {
-    const darkBrown = rng.pick([
-      { h: 0.11, s: 0.22, v: 0.16 },
-      { h: 0.09, s: 0.28, v: 0.22 },
-      { h: 0.07, s: 0.18, v: 0.14 },
-      { h: 0.0, s: 0.06, v: 0.1 },
-      { h: 0.15, s: 0.2, v: 0.19 },
-      { h: 0.58, s: 0.08, v: 0.2 },
-    ])
+    const darkBrown = rng.pick(config.genetics.naturalPalettes)
     genome.hueA = clamp(darkBrown.h + rng.normal(0, 0.015))
     genome.hueB = clamp(darkBrown.h + rng.normal(0, 0.02))
     genome.satA = clamp(darkBrown.s + rng.normal(0, 0.05))
@@ -63,48 +57,31 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) 
   for (const key of TRAIT_KEYS) {
     const sigmaBase = MUTATION_SIGMA[key] * mutationStrength
     const sigma = COLOR_KEYS.has(key)
-      ? sigmaBase * 0.22
+      ? sigmaBase * config.genetics.colorMutationMultiplier
       : key === 'height'
-        ? sigmaBase * 0.45
+        ? sigmaBase * config.genetics.heightMutationMultiplier
         : sigmaBase
-    const meanPull = COLOR_KEYS.has(key) ? 0.02 : 0.04
+    const meanPull = COLOR_KEYS.has(key) ? config.genetics.colorMeanPull : config.genetics.defaultMeanPull
     let value = parentGenome[key] + rng.normal(0, sigma)
     value += (averages[key] - parentGenome[key]) * meanPull * mutationStrength
     child[key] = clamp(value)
   }
 
-  if (rng.chance(0.003 * mutationStrength + 0.002)) {
-    const macroCandidates = [
-      'hairiness',
-      'antennaFluff',
-      'eyeStyle',
-      'lashiness',
-      'skinTexture',
-      'accentAmount',
-      'armMuscle',
-    ]
-    const key = rng.pick(macroCandidates)
-    child[key] = clamp(child[key] + rng.normal(0, MUTATION_SIGMA[key] * 12))
+  if (rng.chance(config.genetics.macroMutationChanceScale * mutationStrength + config.genetics.macroMutationChanceBase)) {
+    const key = rng.pick(config.genetics.macroMutationTraits)
+    child[key] = clamp(child[key] + rng.normal(0, MUTATION_SIGMA[key] * config.genetics.macroMutationMultiplier))
   }
 
   child.neckLength = clamp(child.neckLength * 0.55 + 0.02)
-  child.bodySquareness = clamp(child.bodySquareness * 0.35)
-  child.height = clamp(child.height * 0.8 + parentGenome.height * 0.2)
-  child.hairiness = clamp(child.hairiness * rng.range(0.7, 1.01))
-  child.antennaFluff = clamp(child.antennaFluff * rng.range(0.7, 1.01))
-  child.monochromeTendency = clamp(Math.max(child.monochromeTendency, 0.7))
+  child.bodySquareness = clamp(child.bodySquareness * config.genetics.bodySquarenessDamping)
+  child.height = clamp(child.height * (1 - config.genetics.heightParentBlend) + parentGenome.height * config.genetics.heightParentBlend)
+  child.hairiness = clamp(child.hairiness * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
+  child.antennaFluff = clamp(child.antennaFluff * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
+  child.monochromeTendency = clamp(Math.max(child.monochromeTendency, config.genetics.monochromeFloor))
 
-  const likelyNatural = rng.chance(0.9)
+  const likelyNatural = rng.chance(config.genetics.naturalPaletteChance)
   if (likelyNatural) {
-    const darkBrown = rng.pick([
-      { h: 0.11, s: 0.22, v: 0.16 },
-      { h: 0.09, s: 0.28, v: 0.22 },
-      { h: 0.07, s: 0.18, v: 0.14 },
-      { h: 0.0, s: 0.06, v: 0.1 },
-      { h: 0.98, s: 0.24, v: 0.2 },
-      { h: 0.58, s: 0.08, v: 0.2 },
-      { h: 0.15, s: 0.2, v: 0.19 },
-    ])
+    const darkBrown = rng.pick(config.genetics.naturalPalettes)
     child.hueA = clamp(child.hueA * 0.45 + darkBrown.h * 0.55 + rng.normal(0, 0.01))
     child.hueB = clamp(child.hueB * 0.4 + darkBrown.h * 0.6 + rng.normal(0, 0.012))
     child.satA = clamp(child.satA * 0.5 + darkBrown.s * 0.5)

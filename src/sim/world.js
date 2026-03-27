@@ -2,9 +2,10 @@ import { createAverageGenome, createRandomGenome, computeGeneAverages, mutateGen
 import { derivePhenotype } from './phenotype.js'
 import { createRng } from '../utils/rng.js'
 import { clamp, lerp } from '../utils/math.js'
+import config from '../config.js'
 
-const BASE_TARGET_POP = 30
-const HARD_CAP = 72
+const BASE_TARGET_POP = config.genetics.targetPopulation
+const HARD_CAP = config.genetics.hardCap
 
 const createIdFactory = () => {
   let index = 0
@@ -164,10 +165,10 @@ const updateCreature = (creature, world, controls, dt) => {
   const speed = lerp(18, 66, creature.genome.stepRate) * controls.speed
   creature.x += creature.facing * speed * dt
 
-  const laneCenter = world.height * 0.71
-  const laneVariance = world.height * 0.1
-  const desiredY = Math.sin(creature.x * 0.01 + creature.wobblePhase * 0.35) * laneVariance * 0.45 + Math.cos(creature.x * 0.004 + creature.generation) * laneVariance * 0.2
-  creature.y += (desiredY - creature.y) * Math.min(1, dt * 1.8)
+  const laneCenter = world.height * config.visuals.lane.heightRatio
+  const laneVariance = world.height * config.visuals.lane.varianceRatio
+  const desiredY = Math.sin(creature.x * 0.01 + creature.wobblePhase * 0.35) * laneVariance * config.visuals.lane.driftSin + Math.cos(creature.x * 0.004 + creature.generation) * laneVariance * config.visuals.lane.driftCos
+  creature.y += (desiredY - creature.y) * Math.min(1, dt * config.visuals.lane.driftResponse)
   creature.y = clamp(creature.y, -laneVariance, laneVariance)
 
   if (creature.x < margin) {

@@ -18,6 +18,12 @@ A static web creature-evolution terrarium.
 - Zustand for lightweight UI/sim bridge
 - Seeded RNG for stable-ish evolution behavior
 
+## Config
+
+Most tweakable constants now live in `src/config.json`, including:
+- visual settings like lane height, bottom shade, highlight glow, and background image
+- gameplay/genetics constants like population caps, macro mutation rates, palette tendencies, and mutation stability
+
 ## Scripts
 
 - `npm run dev` — local dev
