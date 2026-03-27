@@ -61,25 +61,40 @@ export const computeGeneAverages = (creatures) => {
 export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) => {
   const child = {}
   for (const key of TRAIT_KEYS) {
-    const sigma = MUTATION_SIGMA[key] * mutationStrength
-    const meanPull = COLOR_KEYS.has(key) ? 0.08 : 0.05
+    const sigmaBase = MUTATION_SIGMA[key] * mutationStrength
+    const sigma = COLOR_KEYS.has(key)
+      ? sigmaBase * 0.22
+      : key === 'height'
+        ? sigmaBase * 0.45
+        : sigmaBase
+    const meanPull = COLOR_KEYS.has(key) ? 0.02 : 0.04
     let value = parentGenome[key] + rng.normal(0, sigma)
     value += (averages[key] - parentGenome[key]) * meanPull * mutationStrength
     child[key] = clamp(value)
   }
 
-  if (rng.chance(0.012 * mutationStrength + 0.006)) {
-    const key = rng.pick(TRAIT_KEYS)
-    child[key] = clamp(child[key] + rng.normal(0, MUTATION_SIGMA[key] * 9))
+  if (rng.chance(0.003 * mutationStrength + 0.002)) {
+    const macroCandidates = [
+      'hairiness',
+      'antennaFluff',
+      'eyeStyle',
+      'lashiness',
+      'skinTexture',
+      'accentAmount',
+      'armMuscle',
+    ]
+    const key = rng.pick(macroCandidates)
+    child[key] = clamp(child[key] + rng.normal(0, MUTATION_SIGMA[key] * 12))
   }
 
   child.neckLength = clamp(child.neckLength * 0.55 + 0.02)
-  child.bodySquareness = clamp(child.bodySquareness * 0.45)
-  child.hairiness = clamp(child.hairiness * rng.range(0.45, 1.02))
-  child.antennaFluff = clamp(child.antennaFluff * rng.range(0.45, 1.04))
-  child.monochromeTendency = clamp(Math.max(child.monochromeTendency, 0.58))
+  child.bodySquareness = clamp(child.bodySquareness * 0.35)
+  child.height = clamp(child.height * 0.8 + parentGenome.height * 0.2)
+  child.hairiness = clamp(child.hairiness * rng.range(0.7, 1.01))
+  child.antennaFluff = clamp(child.antennaFluff * rng.range(0.7, 1.01))
+  child.monochromeTendency = clamp(Math.max(child.monochromeTendency, 0.7))
 
-  const likelyNatural = rng.chance(0.86)
+  const likelyNatural = rng.chance(0.9)
   if (likelyNatural) {
     const darkBrown = rng.pick([
       { h: 0.11, s: 0.22, v: 0.16 },

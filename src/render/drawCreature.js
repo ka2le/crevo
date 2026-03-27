@@ -20,8 +20,7 @@ export const drawCreature = (ctx, creature, groundY) => {
   const headY = thoraxY - phenotype.thoraxRadius * 0.88 - phenotype.neck - phenotype.headRadius * 0.82
   const shoulderY = thoraxY - phenotype.thoraxRadius * 0.12
 
-  drawLegSet(ctx, phenotype, pelvisY, -1, liftA, 0.44)
-  drawLegSet(ctx, phenotype, pelvisY, 1, liftB, 1)
+  drawLegPair(ctx, phenotype, pelvisY, liftA, liftB)
 
   drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen)
   drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.9, phenotype.skinTexture, creature.id.length)
@@ -108,27 +107,18 @@ const drawNeckBridge = (ctx, phenotype, thoraxY, headY) => {
   ctx.stroke()
 }
 
-const drawLegSet = (ctx, phenotype, pelvisY, sideDepth, lift, alpha) => {
-  const anchors = [
-    { x: -phenotype.thoraxRadius * 0.22, length: phenotype.legs.front, phase: lift },
-    { x: 0, length: phenotype.legs.mid, phase: lift * 0.72 },
-    { x: phenotype.abdomenRadius * 0.24, length: phenotype.legs.rear, phase: lift * 0.45 },
-  ]
-
-  for (let index = 0; index < anchors.length; index += 1) {
-    const leg = anchors[index]
-    const stride = (index - 1) * 8
-    drawSingleLeg(ctx, phenotype, leg.x, pelvisY - index * 1.5, sideDepth, leg.length, leg.phase, stride, alpha)
-  }
+const drawLegPair = (ctx, phenotype, pelvisY, liftNear, liftFar) => {
+  drawSingleLeg(ctx, phenotype, -phenotype.thoraxRadius * 0.05, pelvisY, -1, phenotype.legs.rear, liftFar, 0.5)
+  drawSingleLeg(ctx, phenotype, phenotype.thoraxRadius * 0.08, pelvisY + 1, 1, phenotype.legs.rear, liftNear, 1)
 }
 
-const drawSingleLeg = (ctx, phenotype, anchorX, anchorY, sideDepth, length, lift, stride, alpha) => {
-  const kneeX = anchorX + sideDepth * (10 + stride * 0.1)
+const drawSingleLeg = (ctx, phenotype, anchorX, anchorY, sideDepth, length, lift, alpha) => {
+  const kneeX = anchorX + sideDepth * 13
   const kneeY = anchorY + length * 0.34 - lift * 0.32
-  const footX = anchorX + sideDepth * (22 + stride * 0.26)
+  const footX = anchorX + sideDepth * 28
   const footY = anchorY + length + lift
 
-  ctx.strokeStyle = phenotype.colors.limbs.replace(/0\.95\)/, `${0.28 + alpha * 0.62})`)
+  ctx.strokeStyle = phenotype.colors.limbs.replace(/0\.95\)/, `${0.26 + alpha * 0.62})`)
   ctx.lineWidth = phenotype.legs.thickness * alpha
   ctx.lineCap = 'round'
   ctx.beginPath()
