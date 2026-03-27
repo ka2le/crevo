@@ -30,6 +30,7 @@ export const renderWorld = ({ ctx, world, width, height, pointer }) => {
   }
 
   drawBackdrop(ctx, width, height)
+  drawBottomShade(ctx, width, height)
   const groundY = height * 0.71
 
   for (const creature of world.creatures) {
@@ -75,5 +76,14 @@ const drawBackdrop = (ctx, width, height) => {
     ctx.fill()
   }
   ctx.restore()
+}
+
+const drawBottomShade = (ctx, width, height) => {
+  const shade = ctx.createLinearGradient(0, height * 0.64, 0, height)
+  shade.addColorStop(0, 'rgba(10, 12, 10, 0)')
+  shade.addColorStop(0.5, 'rgba(9, 11, 9, 0.14)')
+  shade.addColorStop(1, 'rgba(5, 6, 5, 0.38)')
+  ctx.fillStyle = shade
+  ctx.fillRect(0, height * 0.6, width, height * 0.4)
 }
 
