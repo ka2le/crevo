@@ -1,0 +1,174 @@
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.top-bar,
+.bottom-readout {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: max(0.75rem, env(safe-area-inset-top)) 1rem 0;
+  pointer-events: none;
+}
+
+.top-bar {
+  top: 0;
+  flex-wrap: wrap;
+}
+
+.bottom-readout {
+  bottom: 0;
+  top: auto;
+  padding: 0 1rem max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.control-group,
+.readout-block,
+.stat-pill {
+  background: rgba(11, 15, 11, 0.54);
+  border: 1px solid rgba(244, 240, 221, 0.1);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
+}
+
+.control-group {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 999px;
+  flex-wrap: wrap;
+}
+
+.stats-strip {
+  gap: 0.45rem;
+}
+
+.control {
+  border: 0;
+  color: #f4f0dd;
+}
+
+.button-control {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.button-control:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.button-control.accent {
+  background: rgba(153, 218, 111, 0.16);
+}
+
+.slider-control {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+
+.slider-control input {
+  width: clamp(90px, 12vw, 150px);
+  accent-color: #d7f396;
+}
+
+.stat-pill {
+  min-width: 62px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 14px;
+  display: grid;
+  gap: 0.12rem;
+  text-transform: lowercase;
+}
+
+.stat-pill span,
+.readout-label {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(244, 240, 221, 0.72);
+}
+
+.stat-pill strong {
+  font-size: 0.92rem;
+}
+
+.bottom-readout {
+  align-items: end;
+}
+
+.readout-block {
+  pointer-events: none;
+  padding: 0.7rem 0.9rem;
+  border-radius: 16px;
+  max-width: min(48ch, 48vw);
+}
+
+.readout-block p {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+}
+
+.readout-block.compact {
+  text-align: right;
+}
+
+@media (max-width: 980px) {
+  .top-bar {
+    justify-content: center;
+  }
+
+  .bottom-readout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .readout-block,
+  .readout-block.compact {
+    max-width: none;
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell::before {
+    content: 'rotate to landscape for the terrarium';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    z-index: 6;
+    background: rgba(7, 10, 7, 0.92);
+    color: #f4f0dd;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+}
