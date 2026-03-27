@@ -40,17 +40,6 @@ export const renderWorld = ({ ctx, world, width, height, pointer }) => {
     ctx.fill()
     ctx.globalAlpha = 1
   }
-
-  if (pointer.hovered) {
-    const hovered = world.creatures.find((creature) => creature.id === pointer.hovered)
-    if (hovered) {
-      ctx.strokeStyle = 'rgba(244, 240, 221, 0.18)'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.ellipse(hovered.x, groundY + hovered.y - hovered.phenotype.height * 0.48, hovered.phenotype.headRadius * 1.8, hovered.phenotype.height * 0.62, 0, 0, Math.PI * 2)
-      ctx.stroke()
-    }
-  }
 }
 
 const drawBottomShade = (ctx, width, height) => {

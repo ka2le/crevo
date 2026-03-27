@@ -21,8 +21,13 @@ A static web creature-evolution terrarium.
 ## Config
 
 Most tweakable constants now live in `src/config.json`, including:
-- visual settings like lane height, bottom shade, highlight glow, and background image
+- visual settings like lane height, bottom shade, highlight glow, edge avoidance, and background image
 - gameplay/genetics constants like population caps, macro mutation rates, palette tendencies, and mutation stability
+
+Most useful quick knobs:
+- `visuals.bottomShade.midAlpha` / `visuals.bottomShade.endAlpha` → how dark the bottom gradient is
+- `visuals.lane.edgeAvoidRatio` → how much of the left/right side creatures avoid
+- `genetics.colorMutationMultiplier` / `genetics.colorDrift` / `genetics.colorMeanPull` → how slowly child colors drift from parents
 
 ## Scripts
 

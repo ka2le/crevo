@@ -161,7 +161,7 @@ const updateCreature = (creature, world, controls, dt) => {
   creature.walkPhase += dt * creature.phenotype.walkHz * controls.speed * Math.PI * 2
   creature.wobblePhase += dt * (0.8 + creature.genome.boldness)
 
-  const margin = 36
+  const edgeMargin = world.width * config.visuals.lane.edgeAvoidRatio
   const speed = lerp(18, 66, creature.genome.stepRate) * controls.speed
   creature.x += creature.facing * speed * dt
 
@@ -171,11 +171,15 @@ const updateCreature = (creature, world, controls, dt) => {
   creature.y += (desiredY - creature.y) * Math.min(1, dt * config.visuals.lane.driftResponse)
   creature.y = clamp(creature.y, -laneVariance, laneVariance)
 
-  if (creature.x < margin) {
-    creature.x = margin
+  if (creature.x < edgeMargin) {
+    creature.x = edgeMargin
     creature.facing = 1
-  } else if (creature.x > world.width - margin) {
-    creature.x = world.width - margin
+  } else if (creature.x > world.width - edgeMargin) {
+    creature.x = world.width - edgeMargin
+    creature.facing = -1
+  } else if (creature.x < edgeMargin * 1.25 && creature.facing === -1) {
+    creature.facing = 1
+  } else if (creature.x > world.width - edgeMargin * 1.25 && creature.facing === 1) {
     creature.facing = -1
   } else if (world.rng.chance(0.0025 * dt * 60 * (0.35 + creature.genome.boldness))) {
     creature.facing *= -1

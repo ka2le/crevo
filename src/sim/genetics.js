@@ -57,9 +57,9 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng }) 
   for (const key of TRAIT_KEYS) {
     const sigmaBase = MUTATION_SIGMA[key] * mutationStrength
     const sigma = COLOR_KEYS.has(key)
-      ? sigmaBase * config.genetics.colorMutationMultiplier
+      ? sigmaBase * config.genetics.colorMutationMultiplier * config.genetics.colorDrift
       : key === 'height'
-        ? sigmaBase * config.genetics.heightMutationMultiplier
+        ? sigmaBase * config.genetics.heightMutationMultiplier * config.genetics.heightDrift
         : sigmaBase
     const meanPull = COLOR_KEYS.has(key) ? config.genetics.colorMeanPull : config.genetics.defaultMeanPull
     let value = parentGenome[key] + rng.normal(0, sigma)
