@@ -4,6 +4,7 @@ import { renderWorld } from '../render/renderer.js'
 import { hitTestCreature } from '../input/hitTest.js'
 
 const HOLD_MS = 360
+const TOUCH_CLICK_GUARD_MS = 700
 
 export function GameCanvas() {
   const canvasRef = useRef(null)
@@ -11,13 +12,15 @@ export function GameCanvas() {
   const holdIdRef = useRef(null)
   const animationFrameRef = useRef(null)
   const lastTimeRef = useRef(0)
+  const ignoreClickUntilRef = useRef(0)
 
   useEffect(() => {
     const resize = () => {
       const canvas = canvasRef.current
       if (!canvas) return
-      const width = window.innerWidth
-      const height = window.innerHeight
+      const portraitRotated = window.matchMedia('(max-width: 760px) and (orientation: portrait)').matches
+      const width = portraitRotated ? window.innerHeight : window.innerWidth
+      const height = portraitRotated ? window.innerWidth : window.innerHeight
       const ratio = window.devicePixelRatio || 1
       canvas.width = width * ratio
       canvas.height = height * ratio
@@ -84,6 +87,7 @@ export function GameCanvas() {
       onMouseMove={(event) => updatePointer(event.clientX, event.clientY)}
       onMouseLeave={() => useCrevoStore.getState().setPointer({ x: 0, y: 0, hovered: null })}
       onClick={(event) => {
+        if (Date.now() < ignoreClickUntilRef.current) return
         const id = updatePointer(event.clientX, event.clientY)
         if (id) useCrevoStore.getState().multiplyCreature(id)
       }}
@@ -93,6 +97,8 @@ export function GameCanvas() {
         if (id) useCrevoStore.getState().explodeCreature(id)
       }}
       onTouchStart={(event) => {
+        event.preventDefault()
+        ignoreClickUntilRef.current = Date.now() + TOUCH_CLICK_GUARD_MS
         const touch = event.touches[0]
         const id = updatePointer(touch.clientX, touch.clientY)
         holdIdRef.current = id
@@ -100,6 +106,7 @@ export function GameCanvas() {
         holdTimerRef.current = window.setTimeout(() => explodeIfHeld(holdIdRef.current), HOLD_MS)
       }}
       onTouchMove={(event) => {
+        event.preventDefault()
         const touch = event.touches[0]
         const id = updatePointer(touch.clientX, touch.clientY)
         if (holdIdRef.current && holdIdRef.current !== id) {
@@ -109,6 +116,8 @@ export function GameCanvas() {
         }
       }}
       onTouchEnd={(event) => {
+        event.preventDefault()
+        ignoreClickUntilRef.current = Date.now() + TOUCH_CLICK_GUARD_MS
         clearHold()
         const state = useCrevoStore.getState()
         const touch = event.changedTouches[0]
