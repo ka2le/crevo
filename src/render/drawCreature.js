@@ -24,10 +24,10 @@ export const drawCreature = (ctx, creature, groundY) => {
 
   drawLegPair(ctx, phenotype, pelvisY, liftA, liftB)
 
-  drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen, creature.highlight)
-  drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.9, phenotype.skinTexture, creature.id.length)
-  drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02, phenotype.thoraxRadius * 0.92, phenotype.bodySquareness * 0.85, phenotype.colors.thorax, creature.highlight)
-  drawTextureDots(ctx, 0, thoraxY, phenotype.thoraxRadius * 0.84, phenotype.skinTexture, creature.generation + 11)
+  drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen, creature.highlight, creature.generation)
+  drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.96, phenotype.skinTexture, creature.id.length, phenotype.colors.texture)
+  drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02, phenotype.thoraxRadius * 0.92, phenotype.bodySquareness * 0.85, phenotype.colors.thorax, creature.highlight, creature.generation + 11)
+  drawTextureDots(ctx, 0, thoraxY, phenotype.thoraxRadius * 0.92, phenotype.skinTexture, creature.generation + 11, phenotype.colors.texture)
 
   drawNeckBridge(ctx, phenotype, thoraxY, headY)
 
@@ -35,7 +35,7 @@ export const drawCreature = (ctx, creature, groundY) => {
     drawArms(ctx, phenotype, shoulderY, liftA, liftB)
   }
 
-  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * 0.9, phenotype.bodySquareness * 0.5, phenotype.colors.thorax, creature.highlight)
+  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * 0.9, phenotype.bodySquareness * 0.5, phenotype.colors.thorax, creature.highlight, creature.generation + 21)
   drawFace(ctx, phenotype, headY)
   drawAntennae(ctx, phenotype, headY)
 
@@ -49,6 +49,20 @@ export const drawCreature = (ctx, creature, groundY) => {
 const ellipse = (ctx, x, y, rx, ry) => {
   ctx.beginPath()
   ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2)
+}
+
+const organicBlob = (ctx, x, y, rx, ry, seed = 0) => {
+  const points = 18
+  ctx.beginPath()
+  for (let i = 0; i <= points; i += 1) {
+    const t = (i / points) * Math.PI * 2
+    const wobble = 1 + Math.sin(t * 3 + seed * 0.17) * 0.06 + Math.cos(t * 5 + seed * 0.11) * 0.04
+    const px = x + Math.cos(t) * rx * wobble
+    const py = y + Math.sin(t) * ry * wobble
+    if (i === 0) ctx.moveTo(px, py)
+    else ctx.lineTo(px, py)
+  }
+  ctx.closePath()
 }
 
 const roundedRect = (ctx, x, y, width, height, radius) => {
@@ -66,42 +80,42 @@ const roundedRect = (ctx, x, y, width, height, radius) => {
   ctx.closePath()
 }
 
-const drawBodySegment = (ctx, x, y, rx, ry, square, fill, highlight = 0) => {
+const buildBodyPath = (ctx, x, y, rx, ry, square, seed) => {
+  if (square > 0.16) {
+    roundedRect(ctx, x, y, rx * 2, ry * 2, Math.min(rx, ry) * (0.9 - square))
+  } else {
+    organicBlob(ctx, x, y, rx, ry, seed)
+  }
+}
+
+const drawBodySegment = (ctx, x, y, rx, ry, square, fill, highlight = 0, seed = 0) => {
   if (highlight > 0) {
     ctx.save()
     ctx.shadowColor = `rgba(244, 240, 221, ${config.visuals.highlight.edgeGlowAlpha + highlight * config.visuals.highlight.edgeGlowBoost})`
     ctx.shadowBlur = config.visuals.highlight.edgeGlowBlur * highlight
     ctx.strokeStyle = `rgba(244, 240, 221, ${0.08 + highlight * 0.24})`
     ctx.lineWidth = 1.5
-    if (square > 0.16) {
-      roundedRect(ctx, x, y, rx * 2, ry * 2, Math.min(rx, ry) * (0.9 - square))
-    } else {
-      ellipse(ctx, x, y, rx, ry)
-    }
+    buildBodyPath(ctx, x, y, rx, ry, square, seed)
     ctx.stroke()
     ctx.restore()
   }
 
   ctx.fillStyle = fill
-  if (square > 0.16) {
-    roundedRect(ctx, x, y, rx * 2, ry * 2, Math.min(rx, ry) * (0.9 - square))
-  } else {
-    ellipse(ctx, x, y, rx, ry)
-  }
+  buildBodyPath(ctx, x, y, rx, ry, square, seed)
   ctx.fill()
 }
 
-const drawTextureDots = (ctx, x, y, radius, amount, seed) => {
+const drawTextureDots = (ctx, x, y, radius, amount, seed, color) => {
   if (amount < 0.08) return
-  const dots = 4 + Math.floor(amount * 12)
+  const dots = 5 + Math.floor(amount * 14)
   for (let i = 0; i < dots; i += 1) {
     const angle = (i / dots) * Math.PI * 2 + seed * 0.13
-    const distance = radius * (0.2 + ((i * 17) % 7) / 10)
+    const distance = radius * (0.18 + ((i * 17) % 7) / 9)
     const px = x + Math.cos(angle) * distance * 0.62
     const py = y + Math.sin(angle) * distance * 0.42
-    ctx.fillStyle = `rgba(255, 250, 240, ${0.04 + amount * 0.13})`
+    ctx.fillStyle = color
     ctx.beginPath()
-    ctx.arc(px, py, Math.max(0.8, amount * 2.1), 0, Math.PI * 2)
+    ctx.arc(px, py, Math.max(1.1, amount * 2.7), 0, Math.PI * 2)
     ctx.fill()
   }
 }

@@ -67,7 +67,7 @@ export const derivePhenotype = (genome, worldHeight = BASE_VIEWPORT_HEIGHT) => {
       eye: rgbToString(eyeTone),
       glow: rgbToString(eyeTone, 0.18 + genome.accentAmount * 0.18),
       shadow,
-      texture: rgba(baseA.r * 0.8, baseA.g * 0.78, baseA.b * 0.76, 0.14 + genome.skinTexture * 0.18),
+      texture: rgba(baseA.r * 0.62 + 34, baseA.g * 0.6 + 28, baseA.b * 0.58 + 24, 0.2 + genome.skinTexture * 0.24),
       hair: rgba(245, 240, 228, 0.16 + genome.hairiness * 0.18),
       muscle: rgba(baseA.r, baseA.g, baseA.b, 0.55),
     },

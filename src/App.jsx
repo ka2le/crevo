@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import './App.css'
 import { useCrevoStore } from './game/store.js'
 import { GameCanvas } from './game/GameCanvas.jsx'
@@ -40,13 +39,6 @@ function App() {
   const spawnAverageCreature = useCrevoStore((state) => state.spawnAverageCreature)
   const spawnRandomCreature = useCrevoStore((state) => state.spawnRandomCreature)
   const resetWorld = useCrevoStore((state) => state.resetWorld)
-
-  const dominantGenes = useMemo(() => {
-    return stats.geneAverages
-      .slice(0, 5)
-      .map((entry) => `${entry.key}:${entry.value.toFixed(2)}`)
-      .join(' · ')
-  }, [stats.geneAverages])
 
   return (
     <main className="app-shell">
@@ -113,17 +105,6 @@ function App() {
           <p>rotate to landscape for the proper framing</p>
         </div>
       </aside>
-
-      <footer className="bottom-readout">
-        <div className="readout-block">
-          <span className="readout-label">gene drift</span>
-          <p>{dominantGenes || 'warming up...'}</p>
-        </div>
-        <div className="readout-block compact">
-          <span className="readout-label">hint</span>
-          <p>tap/click clones · hold/right-click pops · landscape looks best</p>
-        </div>
-      </footer>
     </main>
   )
 }
