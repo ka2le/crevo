@@ -107,6 +107,13 @@ function App() {
 
       <GameCanvas />
 
+      <aside className="portrait-hint" aria-hidden="true">
+        <div className="portrait-card">
+          <span>portrait</span>
+          <p>rotate to landscape for the proper framing</p>
+        </div>
+      </aside>
+
       <footer className="bottom-readout">
         <div className="readout-block">
           <span className="readout-label">gene drift</span>
@@ -114,7 +121,7 @@ function App() {
         </div>
         <div className="readout-block compact">
           <span className="readout-label">hint</span>
-          <p>tap/click clones · hold/right-click pops · landscape-first</p>
+          <p>tap/click clones · hold/right-click pops · landscape looks best</p>
         </div>
       </footer>
     </main>

@@ -15,7 +15,7 @@ const createIdFactory = () => {
 const makeCreature = ({ id, genome, x, generation, bornAt, facing, rng, worldHeight }) => ({
   id,
   genome,
-  phenotype: derivePhenotype(genome),
+  phenotype: derivePhenotype(genome, worldHeight),
   x,
   y: rng.range(-worldHeight * 0.05, worldHeight * 0.05),
   facing,
@@ -228,6 +228,7 @@ export const resizeWorld = (world, width, height) => {
   world.height = height
   for (const creature of world.creatures) {
     creature.x = clamp(creature.x, 24, width - 24)
+    creature.phenotype = derivePhenotype(creature.genome, height)
   }
 }
 

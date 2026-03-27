@@ -2,9 +2,11 @@ import { hsvToRgb, rgbToString } from '../utils/color.js'
 import { lerp } from '../utils/math.js'
 
 const rgba = (r, g, b, a) => `rgba(${r}, ${g}, ${b}, ${a})`
+const BASE_VIEWPORT_HEIGHT = 900
 
-export const derivePhenotype = (genome) => {
-  const height = lerp(84, 236, genome.height)
+export const derivePhenotype = (genome, worldHeight = BASE_VIEWPORT_HEIGHT) => {
+  const viewportScale = Math.max(0.58, Math.min(1.05, worldHeight / BASE_VIEWPORT_HEIGHT))
+  const height = lerp(84, 236, genome.height) * viewportScale
   const thoraxRadius = height * lerp(0.16, 0.25, genome.thoraxSize)
   const abdomenRadius = height * lerp(0.17, 0.29, genome.abdomenSize)
   const headRadius = height * lerp(0.11, 0.22, genome.headSize)
@@ -15,7 +17,7 @@ export const derivePhenotype = (genome) => {
     front: height * lerp(0.2, 0.42, genome.legLengthFront),
     mid: height * lerp(0.18, 0.36, genome.legLengthMid),
     rear: height * lerp(0.22, 0.46, genome.legLengthRear),
-    thickness: lerp(2, 7, genome.legThickness),
+    thickness: lerp(2, 7, genome.legThickness) * viewportScale,
   }
 
   const diversity = 1 - genome.monochromeTendency
