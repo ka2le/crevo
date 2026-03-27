@@ -14,7 +14,7 @@ Build a static-page creature evolution sandbox called `crevo` where upright ant-
 - Automated tests for mutation normalization and simulation drift
 
 ## Next likely improvements
-- Use the user-provided background image instead of the painted placeholder backdrop
+- Background image integrated as `public/crevo-background.png`
 - Better creature silhouettes and part variety
 - Creature inspector card for selected critter
 - More explicit gene/family history logging and charts

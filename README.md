@@ -4,7 +4,7 @@ A static web creature-evolution terrarium.
 
 ## What it does
 
-- Side-view canvas world with upright ant-ish procedural creatures
+- Side-view canvas world using the provided scrapyard/slime background with upright ant-ish procedural creatures
 - Click / tap a creature to clone it with mutation
 - Right-click / long-press a creature to explode it
 - Creatures age, wander, reproduce, and die on their own

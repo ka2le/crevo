@@ -6,7 +6,7 @@ const getBackdrop = () => {
   if (typeof Image === 'undefined') return null
   if (!cachedBackdrop) {
     cachedBackdrop = new Image()
-    cachedBackdrop.src = `${import.meta.env.BASE_URL}background-placeholder.svg`
+    cachedBackdrop.src = `${import.meta.env.BASE_URL}crevo-background.png`
   }
   return cachedBackdrop
 }
