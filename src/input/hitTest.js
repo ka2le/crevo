@@ -4,11 +4,11 @@ export const hitTestCreature = (world, x, y) => {
   let bestScore = Infinity
 
   for (const creature of world.creatures) {
-    const centerY = groundY + creature.y - creature.phenotype.height * 0.48
+    const centerY = groundY + creature.y - creature.phenotype.height * 0.5 - creature.phenotype.legRaise * 0.45
     const dx = x - creature.x
     const dy = y - centerY
-    const radiusX = creature.phenotype.headRadius * 2.1
-    const radiusY = creature.phenotype.height * 0.62
+    const radiusX = Math.max(creature.phenotype.silhouetteWidth * 0.6, creature.phenotype.headRadius * 2.2)
+    const radiusY = creature.phenotype.height * (0.46 + creature.phenotype.bodyFusion * 0.12)
     const norm = (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY)
     if (norm <= 1 && norm < bestScore) {
       best = creature.id

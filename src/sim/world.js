@@ -78,14 +78,18 @@ export const createWorld = ({ width = 1280, height = 720, seed = 'crevo' } = {})
   return world
 }
 
-const spawnChild = ({ world, parent, controls, x, generationBoost = 1 }) => {
+const spawnChild = ({ world, parent, controls, x, generationBoost = 1, context = 'natural' }) => {
   if (world.creatures.length >= HARD_CAP) return null
   const averages = computeGeneAverages(world.creatures)
+  const mutationStrength = context === 'clicked'
+    ? controls.mutationStrength * config.genetics.clickMutationStrengthBoost
+    : controls.mutationStrength
   const genome = mutateGenome({
     parentGenome: parent?.genome ?? createAverageGenome(),
     averages,
-    mutationStrength: controls.mutationStrength,
+    mutationStrength,
     rng: world.rng,
+    context,
   })
 
   const creature = makeCreature({
@@ -135,7 +139,7 @@ export const multiplyCreature = (world, creatureId, controls) => {
   if (!target) return null
   target.highlight = 1
   const offset = world.rng.range(-48, 48)
-  return spawnChild({ world, parent: target, controls, x: target.x + offset })
+  return spawnChild({ world, parent: target, controls, x: target.x + offset, context: 'clicked' })
 }
 
 const spontaneousBirths = (world, controls) => {

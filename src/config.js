@@ -1,4 +1,4 @@
-export default {
+const rawConfig = {
   visuals: {
     background: {
       image: 'crevo-background.png',
@@ -27,22 +27,38 @@ export default {
   genetics: {
     targetPopulation: 30,
     hardCap: 72,
-    macroMutationChanceBase: 0.002,
-    macroMutationChanceScale: 0.003,
-    macroMutationMultiplier: 12,
-    colorMutationMultiplier: 0.04,
-    colorDrift: 0.04,
+    macroMutationChanceBase: 0.003,
+    macroMutationChanceScale: 0.006,
+    macroMutationMultiplier: 13,
+    colorMutationMultiplier: 0.08,
+    colorDrift: 0.08,
     colorMeanPull: 0.004,
-    colorLockToParent: 0.92,
-    heightMutationMultiplier: 0.45,
-    heightDrift: 0.45,
-    defaultMeanPull: 0.04,
-    monochromeFloor: 0.7,
-    bodySquarenessDamping: 0.35,
-    heightParentBlend: 0.2,
-    hairDampingMin: 0.7,
-    hairDampingMax: 1.01,
-    naturalPaletteChance: 0.9,
+    colorLockToParent: 0.9,
+    heightMutationMultiplier: 0.95,
+    heightDrift: 0.95,
+    defaultMeanPull: 0.035,
+    monochromeFloor: 0.52,
+    bodySquarenessDamping: 0.7,
+    heightParentBlend: 0.12,
+    hairDampingMin: 0.82,
+    hairDampingMax: 1.1,
+    naturalPaletteChance: 0.75,
+    colorNormalBands: {
+      hue: [
+        { center: 0.11, radius: 0.055 },
+        { center: 0.07, radius: 0.045 },
+        { center: 0.98, radius: 0.035 },
+        { center: 0.58, radius: 0.04 },
+      ],
+      sat: { min: 0.03, max: 0.38 },
+      val: { min: 0.07, max: 0.34 },
+    },
+    outsideBandMeanPull: 0,
+    rareMutationChance: 0.018,
+    rareMutationBoost: 0.18,
+    forcedTraitMutationCount: 3,
+    clickMutationStrengthBoost: 1.7,
+    clickMutationRareBoost: 0.03,
     naturalPalettes: [
       { h: 0.11, s: 0.22, v: 0.16 },
       { h: 0.09, s: 0.28, v: 0.22 },
@@ -60,6 +76,39 @@ export default {
       'skinTexture',
       'accentAmount',
       'armMuscle',
+      'bodyFusion',
+      'eyeCount',
+      'rainbowness',
+      'bulk',
     ],
+    rareMutationProfiles: {
+      rainbow: {
+        chance: 0.2,
+        traits: ['rainbowness', 'accentAmount', 'contrastTendency', 'monochromeTendency', 'satA', 'satB', 'valA', 'valB'],
+        amount: 0.35,
+      },
+      manyEyes: {
+        chance: 0.24,
+        traits: ['eyeCount', 'eyeSize', 'eyeSpacing', 'pupilHueShift', 'headSize'],
+        amount: 0.32,
+      },
+      fusedBody: {
+        chance: 0.18,
+        traits: ['bodyFusion', 'bulk', 'thoraxSize', 'abdomenSize', 'waistTightness', 'headSize'],
+        amount: 0.34,
+      },
+      tower: {
+        chance: 0.19,
+        traits: ['height', 'legLengthFront', 'legLengthMid', 'legLengthRear', 'uprightness', 'neckLength'],
+        amount: 0.34,
+      },
+      squat: {
+        chance: 0.19,
+        traits: ['height', 'bulk', 'legLengthFront', 'legLengthMid', 'legLengthRear', 'abdomenSize', 'thoraxSize'],
+        amount: 0.32,
+      },
+    },
   },
 }
+
+export default rawConfig

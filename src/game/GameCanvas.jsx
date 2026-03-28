@@ -3,17 +3,12 @@ import { useCrevoStore } from './store.js'
 import { renderWorld } from '../render/renderer.js'
 import { hitTestCreature, mapPortraitPointer } from '../input/hitTest.js'
 
-const HOLD_MS = 360
-const TOUCH_CLICK_GUARD_MS = 700
 const PORTRAIT_QUERY = '(max-width: 760px) and (orientation: portrait)'
 
 export function GameCanvas() {
   const canvasRef = useRef(null)
-  const holdTimerRef = useRef(null)
-  const holdIdRef = useRef(null)
   const animationFrameRef = useRef(null)
   const lastTimeRef = useRef(0)
-  const ignoreClickUntilRef = useRef(0)
   const portraitRef = useRef(false)
 
   useEffect(() => {
@@ -22,8 +17,8 @@ export function GameCanvas() {
       if (!canvas) return
       const portraitRotated = window.matchMedia(PORTRAIT_QUERY).matches
       portraitRef.current = portraitRotated
-      const width = portraitRotated ? window.innerWidth : window.innerWidth
-      const height = portraitRotated ? window.innerHeight : window.innerHeight
+      const width = window.innerWidth
+      const height = window.innerHeight
       const ratio = window.devicePixelRatio || 1
       canvas.width = width * ratio
       canvas.height = height * ratio
@@ -79,17 +74,10 @@ export function GameCanvas() {
     return hovered
   }
 
-  const explodeIfHeld = (id) => {
-    if (!id) return
-    useCrevoStore.getState().explodeCreature(id)
-    holdIdRef.current = null
-  }
-
-  const clearHold = () => {
-    if (holdTimerRef.current) {
-      window.clearTimeout(holdTimerRef.current)
-      holdTimerRef.current = null
-    }
+  const performAction = (id, primary = true) => {
+    const state = useCrevoStore.getState()
+    const action = primary ? state.mode : state.mode === 'multiply' ? 'explode' : 'multiply'
+    state.performCreatureAction(id, action)
   }
 
   return (
@@ -99,45 +87,29 @@ export function GameCanvas() {
       onMouseMove={(event) => updatePointer(event.clientX, event.clientY)}
       onMouseLeave={() => useCrevoStore.getState().setPointer({ x: 0, y: 0, hovered: null })}
       onClick={(event) => {
-        if (Date.now() < ignoreClickUntilRef.current) return
         const id = updatePointer(event.clientX, event.clientY)
-        if (id) useCrevoStore.getState().multiplyCreature(id)
+        if (id) performAction(id, true)
       }}
       onContextMenu={(event) => {
         event.preventDefault()
         const id = updatePointer(event.clientX, event.clientY)
-        if (id) useCrevoStore.getState().explodeCreature(id)
+        if (id) performAction(id, false)
       }}
       onTouchStart={(event) => {
         event.preventDefault()
-        ignoreClickUntilRef.current = Date.now() + TOUCH_CLICK_GUARD_MS
         const touch = event.touches[0]
-        const id = updatePointer(touch.clientX, touch.clientY)
-        holdIdRef.current = id
-        clearHold()
-        holdTimerRef.current = window.setTimeout(() => explodeIfHeld(holdIdRef.current), HOLD_MS)
+        updatePointer(touch.clientX, touch.clientY)
       }}
       onTouchMove={(event) => {
         event.preventDefault()
         const touch = event.touches[0]
-        const id = updatePointer(touch.clientX, touch.clientY)
-        if (holdIdRef.current && holdIdRef.current !== id) {
-          clearHold()
-          holdIdRef.current = id
-          holdTimerRef.current = window.setTimeout(() => explodeIfHeld(holdIdRef.current), HOLD_MS)
-        }
+        updatePointer(touch.clientX, touch.clientY)
       }}
       onTouchEnd={(event) => {
         event.preventDefault()
-        ignoreClickUntilRef.current = Date.now() + TOUCH_CLICK_GUARD_MS
-        clearHold()
-        const state = useCrevoStore.getState()
         const touch = event.changedTouches[0]
         const id = updatePointer(touch.clientX, touch.clientY)
-        if (holdIdRef.current && holdIdRef.current === id) {
-          state.multiplyCreature(id)
-        }
-        holdIdRef.current = null
+        if (id) performAction(id, true)
       }}
     />
   )

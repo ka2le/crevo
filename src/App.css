@@ -126,6 +126,14 @@ body,
   background: rgba(153, 218, 111, 0.16);
 }
 
+.button-control.danger {
+  background: rgba(255, 107, 107, 0.18);
+}
+
+.mode-toggle {
+  min-width: 148px;
+}
+
 .slider-control {
   display: grid;
   gap: 2px;
@@ -250,6 +258,10 @@ body,
     --stat-radius: 8px;
     --stat-label-font: 6px;
     --stat-value-font: 10px;
+  }
+
+  .mode-toggle {
+    min-width: 124px;
   }
 }
 

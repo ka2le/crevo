@@ -33,6 +33,7 @@ export const useCrevoStore = create((set, get) => ({
     set((state) => ({ controls: { ...state.controls, [key]: value } })),
   togglePause: () => set((state) => ({ controls: { ...state.controls, paused: !state.controls.paused } })),
   setMode: (mode) => set({ mode }),
+  toggleMode: () => set((state) => ({ mode: state.mode === 'multiply' ? 'explode' : 'multiply' })),
   tick: (dt) => {
     const world = get().world
     stepWorld(world, get().controls, dt)
@@ -53,6 +54,17 @@ export const useCrevoStore = create((set, get) => ({
     set({ world })
   },
   setPointer: (pointer) => set({ pointer }),
+  performCreatureAction: (id, action = get().mode) => {
+    const state = get()
+    if (!id) return
+    if (action === 'explode') {
+      explodeCreature(state.world, id)
+    } else {
+      multiplyCreature(state.world, id, state.controls)
+    }
+    recomputeStats(state.world)
+    set({ world: state.world, stats: { ...state.world.stats } })
+  },
   multiplyCreature: (id) => {
     const state = get()
     multiplyCreature(state.world, id, state.controls)

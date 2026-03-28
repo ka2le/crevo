@@ -11,44 +11,44 @@ export const drawCreature = (ctx, creature, groundY) => {
   const liftB = Math.max(0, stepB) * phenotype.stepLiftPx
 
   ctx.save()
-  ctx.translate(creature.x, groundY + creature.y - bob)
+  ctx.translate(creature.x, groundY + creature.y - bob - phenotype.legRaise)
   ctx.scale(creature.facing * scaleIn, scaleIn)
   ctx.rotate(phenotype.upright + sway * 0.005)
 
   const pelvisY = 0
+  const fused = phenotype.bodyFusion > 0.58
   const abdomenY = pelvisY - phenotype.abdomenRadius * 0.78
-  const waistY = abdomenY - phenotype.abdomenRadius * (0.7 - phenotype.bodySquareness * 0.4)
-  const thoraxY = waistY - phenotype.thoraxRadius * 0.86
-  const headY = thoraxY - phenotype.thoraxRadius * 0.88 - phenotype.neck - phenotype.headRadius * 0.82
-  const shoulderY = thoraxY - phenotype.thoraxRadius * 0.12
+  const waistY = abdomenY - phenotype.abdomenRadius * (0.7 - phenotype.bodySquareness * 0.4) * (1 - phenotype.bodyFusion * 0.7)
+  const thoraxY = waistY - phenotype.thoraxRadius * (0.86 - phenotype.bodyFusion * 0.35)
+  const fusedBodyY = (abdomenY + thoraxY) * 0.5
+  const headY = (fused ? fusedBodyY : thoraxY) - (fused ? phenotype.fusedBodyRadius * 0.72 : phenotype.thoraxRadius * 0.88) - phenotype.neck - phenotype.headRadius * 0.82
+  const shoulderY = (fused ? fusedBodyY : thoraxY) - phenotype.thoraxRadius * 0.12
 
-  drawLegPair(ctx, phenotype, pelvisY, liftA, liftB)
+  drawLegSet(ctx, phenotype, pelvisY, liftA, liftB)
 
-  drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12, phenotype.abdomenRadius * 0.88, phenotype.bodySquareness, phenotype.colors.abdomen, creature.highlight, creature.generation)
-  drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.96, phenotype.skinTexture, creature.id.length, phenotype.colors.texture)
-  drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02, phenotype.thoraxRadius * 0.92, phenotype.bodySquareness * 0.85, phenotype.colors.thorax, creature.highlight, creature.generation + 11)
-  drawTextureDots(ctx, 0, thoraxY, phenotype.thoraxRadius * 0.92, phenotype.skinTexture, creature.generation + 11, phenotype.colors.texture)
-
-  drawNeckBridge(ctx, phenotype, thoraxY, headY)
+  if (fused) {
+    drawFusedBody(ctx, phenotype, fusedBodyY, creature)
+  } else {
+    drawBodySegment(ctx, 0, abdomenY, phenotype.abdomenRadius * 1.12 * phenotype.bulk, phenotype.abdomenRadius * 0.88 * phenotype.bulk, phenotype.bodySquareness, phenotype.colors.abdomen, creature.highlight, creature.generation)
+    drawTextureDots(ctx, 0, abdomenY, phenotype.abdomenRadius * 0.96, phenotype.skinTexture, creature.id.length, phenotype.colors.texture)
+    drawBodySegment(ctx, 0, thoraxY, phenotype.thoraxRadius * 1.02 * phenotype.bulk, phenotype.thoraxRadius * 0.92 * phenotype.bulk, phenotype.bodySquareness * 0.85, phenotype.colors.thorax, creature.highlight, creature.generation + 11)
+    drawTextureDots(ctx, 0, thoraxY, phenotype.thoraxRadius * 0.92, phenotype.skinTexture, creature.generation + 11, phenotype.colors.texture)
+    drawNeckBridge(ctx, phenotype, thoraxY, headY)
+  }
 
   if (phenotype.hasArms) {
     drawArms(ctx, phenotype, shoulderY, liftA, liftB)
   }
 
-  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * 0.9, phenotype.bodySquareness * 0.5, phenotype.colors.thorax, creature.highlight, creature.generation + 21)
+  drawBodySegment(ctx, 0, headY, phenotype.headRadius, phenotype.headRadius * (0.84 + phenotype.bodyFusion * 0.14), phenotype.bodySquareness * 0.5, phenotype.colors.thorax, creature.highlight, creature.generation + 21)
   drawFace(ctx, phenotype, headY)
   drawAntennae(ctx, phenotype, headY)
 
-  if (phenotype.hairiness > 0.28) {
-    drawBodyHair(ctx, phenotype, abdomenY, thoraxY)
+  if (phenotype.hairiness > 0.2) {
+    drawBodyHair(ctx, phenotype, fused ? fusedBodyY : abdomenY, fused ? fusedBodyY : thoraxY)
   }
 
   ctx.restore()
-}
-
-const ellipse = (ctx, x, y, rx, ry) => {
-  ctx.beginPath()
-  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2)
 }
 
 const organicBlob = (ctx, x, y, rx, ry, seed = 0) => {
@@ -105,6 +105,38 @@ const drawBodySegment = (ctx, x, y, rx, ry, square, fill, highlight = 0, seed = 
   ctx.fill()
 }
 
+const drawFusedBody = (ctx, phenotype, centerY, creature) => {
+  drawBodySegment(
+    ctx,
+    0,
+    centerY,
+    phenotype.fusedBodyRadius * 1.12,
+    phenotype.fusedBodyRadius * 0.88,
+    phenotype.bodySquareness * 0.7,
+    phenotype.colors.abdomen,
+    creature.highlight,
+    creature.generation + 101,
+  )
+  drawBodySegment(
+    ctx,
+    phenotype.fusedBodyRadius * 0.06,
+    centerY - phenotype.fusedBodyRadius * 0.08,
+    phenotype.fusedBodyRadius * 0.92,
+    phenotype.fusedBodyRadius * 0.74,
+    phenotype.bodySquareness * 0.45,
+    phenotype.colors.thorax,
+    creature.highlight * 0.7,
+    creature.generation + 121,
+  )
+  drawTextureDots(ctx, 0, centerY, phenotype.fusedBodyRadius * 0.9, phenotype.skinTexture, creature.id.length + 31, phenotype.colors.texture)
+  if (phenotype.colors.rainbow !== 'rgba(0, 0, 0, 0)') {
+    ctx.fillStyle = phenotype.colors.rainbow
+    ctx.beginPath()
+    ctx.ellipse(0, centerY - phenotype.fusedBodyRadius * 0.08, phenotype.fusedBodyRadius * 0.78, phenotype.fusedBodyRadius * 0.48, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
 const drawTextureDots = (ctx, x, y, radius, amount, seed, color) => {
   if (amount < 0.08) return
   const dots = 5 + Math.floor(amount * 14)
@@ -130,18 +162,23 @@ const drawNeckBridge = (ctx, phenotype, thoraxY, headY) => {
   ctx.stroke()
 }
 
-const drawLegPair = (ctx, phenotype, pelvisY, liftNear, liftFar) => {
-  drawSingleLeg(ctx, phenotype, -phenotype.thoraxRadius * 0.05, pelvisY, -1, phenotype.legs.rear, liftFar, 0.5)
-  drawSingleLeg(ctx, phenotype, phenotype.thoraxRadius * 0.08, pelvisY + 1, 1, phenotype.legs.rear, liftNear, 1)
+const drawLegSet = (ctx, phenotype, pelvisY, liftA, liftB) => {
+  drawSingleLeg(ctx, phenotype, -phenotype.thoraxRadius * 0.14, pelvisY, -1, phenotype.legs.rear, liftFarValue(liftB, phenotype.bodyFusion), 0.45)
+  drawSingleLeg(ctx, phenotype, -phenotype.thoraxRadius * 0.02, pelvisY - 2, -0.45, phenotype.legs.mid, liftFarValue(liftA, phenotype.bodyFusion), 0.72)
+  drawSingleLeg(ctx, phenotype, phenotype.thoraxRadius * 0.14, pelvisY + 1, 1, phenotype.legs.front, liftNearValue(liftA, phenotype.bodyFusion), 1)
 }
 
+const liftFarValue = (lift, fusion) => lift * (0.75 + fusion * 0.1)
+const liftNearValue = (lift, fusion) => lift * (0.9 + fusion * 0.1)
+
 const drawSingleLeg = (ctx, phenotype, anchorX, anchorY, sideDepth, length, lift, alpha) => {
-  const kneeX = anchorX + sideDepth * 13
+  const forward = 18 + phenotype.bodyFusion * 12
+  const kneeX = anchorX + sideDepth * forward * 0.55
   const kneeY = anchorY + length * 0.34 - lift * 0.32
-  const footX = anchorX + sideDepth * 28
+  const footX = anchorX + sideDepth * forward
   const footY = anchorY + length + lift
 
-  ctx.strokeStyle = phenotype.colors.limbs.replace(/0\.95\)/, `${0.26 + alpha * 0.62})`)
+  ctx.strokeStyle = phenotype.colors.limbs.replace(/0\.95\)/, `${0.2 + alpha * 0.66})`)
   ctx.lineWidth = phenotype.legs.thickness * alpha
   ctx.lineCap = 'round'
   ctx.beginPath()
@@ -179,25 +216,30 @@ const drawArms = (ctx, phenotype, shoulderY, liftA, liftB) => {
 }
 
 const drawFace = (ctx, phenotype, headY) => {
-  const leftX = -phenotype.eyeSpacing
-  const rightX = phenotype.eyeSpacing
-  ctx.fillStyle = phenotype.colors.glow
-  ctx.beginPath()
-  ctx.arc(leftX, headY, phenotype.eyeSize * 1.6, 0, Math.PI * 2)
-  ctx.arc(rightX, headY, phenotype.eyeSize * 1.6, 0, Math.PI * 2)
-  ctx.fill()
+  const rows = phenotype.eyePairs === 3 ? [-0.6, 0, 0.6] : phenotype.eyePairs === 2 ? [-0.34, 0.34] : [0]
+  for (const row of rows) {
+    const y = headY + row * phenotype.eyeSize * 1.45
+    const spacingScale = phenotype.eyePairs === 1 ? 1 : 0.68 + Math.abs(row) * 0.12
+    const leftX = -phenotype.eyeSpacing * spacingScale
+    const rightX = phenotype.eyeSpacing * spacingScale
+    ctx.fillStyle = phenotype.colors.glow
+    ctx.beginPath()
+    ctx.arc(leftX, y, phenotype.eyeSize * 1.6, 0, Math.PI * 2)
+    ctx.arc(rightX, y, phenotype.eyeSize * 1.6, 0, Math.PI * 2)
+    ctx.fill()
 
-  if (phenotype.eyeStyle === 'anime') {
-    drawAnimeEye(ctx, leftX, headY, phenotype, -1)
-    drawAnimeEye(ctx, rightX, headY, phenotype, 1)
-  } else if (phenotype.eyeStyle === 'lash') {
-    drawRoundEye(ctx, leftX, headY, phenotype)
-    drawRoundEye(ctx, rightX, headY, phenotype)
-    drawLashes(ctx, leftX, headY, phenotype, -1)
-    drawLashes(ctx, rightX, headY, phenotype, 1)
-  } else {
-    drawRoundEye(ctx, leftX, headY, phenotype)
-    drawRoundEye(ctx, rightX, headY, phenotype)
+    if (phenotype.eyeStyle === 'anime') {
+      drawAnimeEye(ctx, leftX, y, phenotype, -1)
+      drawAnimeEye(ctx, rightX, y, phenotype, 1)
+    } else if (phenotype.eyeStyle === 'lash') {
+      drawRoundEye(ctx, leftX, y, phenotype)
+      drawRoundEye(ctx, rightX, y, phenotype)
+      drawLashes(ctx, leftX, y, phenotype, -1)
+      drawLashes(ctx, rightX, y, phenotype, 1)
+    } else {
+      drawRoundEye(ctx, leftX, y, phenotype)
+      drawRoundEye(ctx, rightX, y, phenotype)
+    }
   }
 }
 

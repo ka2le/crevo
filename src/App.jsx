@@ -35,7 +35,7 @@ function App() {
   const mode = useCrevoStore((state) => state.mode)
   const setControl = useCrevoStore((state) => state.setControl)
   const togglePause = useCrevoStore((state) => state.togglePause)
-  const setMode = useCrevoStore((state) => state.setMode)
+  const toggleMode = useCrevoStore((state) => state.toggleMode)
   const spawnAverageCreature = useCrevoStore((state) => state.spawnAverageCreature)
   const spawnRandomCreature = useCrevoStore((state) => state.spawnRandomCreature)
   const resetWorld = useCrevoStore((state) => state.resetWorld)
@@ -79,12 +79,12 @@ function App() {
             <StatPill label="born" value={stats.births} />
             <StatPill label="lost" value={stats.deaths} />
             <StatPill label="gen" value={stats.maxGeneration} />
-            <StatPill label="mode" value={mode} />
+            <StatPill label="mode" value={mode === 'multiply' ? 'create' : 'destroy'} />
           </div>
 
           <div className="control-group right">
-            <button className="control button-control" onClick={() => setMode(mode === 'multiply' ? 'explode' : 'multiply')}>
-              {mode === 'multiply' ? 'switch: boom' : 'switch: clone'}
+            <button className={`control button-control mode-toggle ${mode === 'explode' ? 'danger' : 'accent'}`} onClick={toggleMode}>
+              {mode === 'multiply' ? 'tap: create · rc: destroy' : 'tap: destroy · rc: create'}
             </button>
             <button className="control button-control accent" onClick={spawnAverageCreature}>
               avg
@@ -104,7 +104,7 @@ function App() {
       <aside className="portrait-hint" aria-hidden="true">
         <div className="portrait-card">
           <span>portrait</span>
-          <p>already rotated — landscape still frames it best</p>
+          <p>tap uses current mode, desktop right-click does the opposite</p>
         </div>
       </aside>
     </main>
