@@ -2,10 +2,13 @@
   "name": "crevo",
   "private": true,
   "version": "0.1.0",
+  "homepage": "https://ka2le.github.io/crevo/",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/crevo/",
+    "build:pages": "vite build --base=/crevo/ --outDir docs",
+    "deploy": "npm run build:pages",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "node --test src/**/*.test.js",
@@ -25,6 +28,7 @@
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "gh-pages": "^6.3.0",
     "globals": "^17.4.0",
     "playwright": "^1.58.2",
     "vite": "^8.0.1"
