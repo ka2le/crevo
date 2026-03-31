@@ -12,24 +12,32 @@ const createIdFactory = () => {
   return () => `creature-${index++}`
 }
 
-const makeCreature = ({ id, genome, x, generation, bornAt, facing, rng, worldHeight }) => ({
-  id,
-  genome,
-  phenotype: derivePhenotype(genome, worldHeight),
-  x,
-  y: rng.range(-worldHeight * 0.05, worldHeight * 0.05),
-  facing,
-  walkPhase: rng.next() * Math.PI * 2,
-  wobblePhase: rng.next() * Math.PI * 2,
-  age: 0,
-  generation,
-  reproductionTimer: 0,
-  maturityTimer: lerp(8, 20, 1 - genome.fertility),
-  deathBurst: 0,
-  bornAt,
-  highlight: 0,
-  alive: true,
-})
+const makeCreature = ({ id, genome, x, generation, bornAt, facing, rng, worldHeight }) => {
+  const phenotype = derivePhenotype(genome, worldHeight)
+  return {
+    id,
+    genome,
+    phenotype,
+    x,
+    y: rng.range(-worldHeight * 0.05, worldHeight * 0.05),
+    facing,
+    walkPhase: rng.next() * Math.PI * 2,
+    wobblePhase: rng.next() * Math.PI * 2,
+    blinkTimer: rng.range(0.15, Math.max(0.3, phenotype.blinkInterval)),
+    blinkProgress: 0,
+    headTiltPhase: rng.next() * Math.PI * 2,
+    headTiltTimer: rng.range(0.8, 3.2),
+    headTiltDirection: rng.chance(0.5) ? -1 : 1,
+    age: 0,
+    generation,
+    reproductionTimer: 0,
+    maturityTimer: lerp(8, 20, 1 - genome.fertility),
+    deathBurst: 0,
+    bornAt,
+    highlight: 0,
+    alive: true,
+  }
+}
 
 export const createWorld = ({ width = 1280, height = 720, seed = 'crevo' } = {}) => {
   const rng = createRng(seed)
@@ -170,6 +178,20 @@ const updateCreature = (creature, world, controls, dt) => {
   creature.reproductionTimer -= dt
   creature.walkPhase += dt * creature.phenotype.walkHz * controls.speed * Math.PI * 2
   creature.wobblePhase += dt * (0.8 + creature.genome.boldness)
+
+  creature.blinkTimer -= dt
+  if (creature.blinkTimer <= 0) {
+    creature.blinkTimer += creature.phenotype.blinkInterval * world.rng.range(0.7, 1.35)
+    creature.blinkProgress = 1
+  }
+  creature.blinkProgress = Math.max(0, creature.blinkProgress - dt * 8.5)
+
+  creature.headTiltTimer -= dt
+  if (creature.headTiltTimer <= 0) {
+    creature.headTiltTimer = world.rng.range(2.2, 6.8)
+    creature.headTiltDirection = world.rng.chance(0.5) ? -1 : 1
+  }
+  creature.headTiltPhase += dt * world.rng.range(0.45, 1.15)
 
   const edgeMargin = world.width * config.visuals.lane.edgeAvoidRatio
   const speed = lerp(18, 66, creature.genome.stepRate) * controls.speed

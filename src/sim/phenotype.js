@@ -60,6 +60,7 @@ export const derivePhenotype = (genome, worldHeight = BASE_VIEWPORT_HEIGHT) => {
     swayPx: height * lerp(0.004, 0.05, genome.sway),
     stepLiftPx: height * lerp(0.008, 0.16, genome.stepLift),
     walkHz: lerp(0.46, 2.2, genome.stepRate),
+    blinkInterval: lerp(4.8, 1.1, genome.blinkRate),
     boldness: genome.boldness,
     eyeSize: headRadius * lerp(0.12, 0.42, genome.eyeSize),
     eyeSpacing: headRadius * lerp(0.12, 0.55, genome.eyeSpacing),
