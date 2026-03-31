@@ -40,6 +40,8 @@ const applyTraitNudge = (genome, key, amount, rng) => {
   genome[key] = clamp(genome[key] + rng.normal(0, sigma))
 }
 
+const blendGene = (parentValue, donorValue, donorBlend) => clamp(parentValue * (1 - donorBlend) + donorValue * donorBlend)
+
 const applyRareMutationProfile = (child, rng) => {
   if (!rng.chance(config.genetics.rareMutationChance)) return false
   const profileEntries = Object.entries(config.genetics.rareMutationProfiles)
@@ -156,15 +158,24 @@ export const computeGeneAverages = (creatures) => {
   }, {})
 }
 
-export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng, context = 'natural' }) => {
+export const mutateGenome = ({
+  parentGenome,
+  donorGenome = parentGenome,
+  averages,
+  mutationStrength,
+  rng,
+  context = 'natural',
+  donorBlend = config.genetics.secondaryParentBlend,
+}) => {
   const child = {}
   for (const key of TRAIT_KEYS) {
     const sigmaBase = MUTATION_SIGMA[key] * mutationStrength
+    const inheritedBase = blendGene(parentGenome[key], donorGenome[key], donorBlend)
     if (COLOR_KEYS.has(key)) {
       const sigma = sigmaBase * config.genetics.colorMutationMultiplier * config.genetics.colorDrift
       child[key] = inheritColorGene(
         key,
-        parentGenome[key],
+        inheritedBase,
         averages[key],
         sigma,
         config.genetics.colorMeanPull * mutationStrength,
@@ -178,8 +189,8 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng, co
       ? sigmaBase * config.genetics.heightMutationMultiplier * config.genetics.heightDrift
       : sigmaBase
     const meanPull = config.genetics.defaultMeanPull
-    let value = parentGenome[key] + rng.normal(0, sigma)
-    value += (averages[key] - parentGenome[key]) * meanPull * mutationStrength
+    let value = inheritedBase + rng.normal(0, sigma)
+    value += (averages[key] - inheritedBase) * meanPull * mutationStrength
     child[key] = clamp(value)
   }
 
@@ -193,6 +204,12 @@ export const mutateGenome = ({ parentGenome, averages, mutationStrength, rng, co
   child.neckLength = clamp(child.neckLength * 0.72 + 0.01)
   child.bodySquareness = clamp(child.bodySquareness * config.genetics.bodySquarenessDamping + parentGenome.bodySquareness * 0.15)
   child.height = clamp(child.height * (1 - config.genetics.heightParentBlend) + parentGenome.height * config.genetics.heightParentBlend)
+  child.hueA = blendGene(child.hueA, parentGenome.hueA, config.genetics.colorParentBias)
+  child.hueB = blendGene(child.hueB, parentGenome.hueB, config.genetics.colorParentBias)
+  child.satA = blendGene(child.satA, parentGenome.satA, config.genetics.colorParentBias)
+  child.satB = blendGene(child.satB, parentGenome.satB, config.genetics.colorParentBias)
+  child.valA = blendGene(child.valA, parentGenome.valA, config.genetics.colorParentBias)
+  child.valB = blendGene(child.valB, parentGenome.valB, config.genetics.colorParentBias)
   child.hairiness = clamp(child.hairiness * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
   child.antennaFluff = clamp(child.antennaFluff * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
   child.monochromeTendency = clamp(Math.max(child.monochromeTendency, config.genetics.monochromeFloor * (1 - child.rainbowness * 0.85)))

@@ -84,8 +84,14 @@ const spawnChild = ({ world, parent, controls, x, generationBoost = 1, context =
   const mutationStrength = context === 'clicked'
     ? controls.mutationStrength * config.genetics.clickMutationStrengthBoost
     : controls.mutationStrength
+  const parentGenome = parent?.genome ?? createAverageGenome()
+  const donorPool = world.creatures.filter((creature) => creature.id !== parent?.id)
+  const donorGenome = donorPool.length
+    ? world.rng.pick(donorPool).genome
+    : parentGenome
   const genome = mutateGenome({
-    parentGenome: parent?.genome ?? createAverageGenome(),
+    parentGenome,
+    donorGenome,
     averages,
     mutationStrength,
     rng: world.rng,

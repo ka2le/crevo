@@ -93,3 +93,23 @@ test('world births increase generations and keep gene logs populated', () => {
   assert.ok(world.stats.geneAverages.length > 10)
   assert.ok(world.stats.maxGeneration >= 1)
 })
+
+test('offspring blend mostly from parent with some donor influence', () => {
+  const rng = createRng('secondary-parent-blend-test')
+  const parent = createAverageGenome()
+  const donor = createAverageGenome()
+  donor.height = 1
+  donor.bulk = 0
+
+  const child = mutateGenome({
+    parentGenome: parent,
+    donorGenome: donor,
+    averages: parent,
+    mutationStrength: 0,
+    rng,
+    donorBlend: 0.15,
+  })
+
+  assert.ok(Math.abs(child.height - (parent.height * 0.85 + donor.height * 0.15)) < 0.02)
+  assert.ok(Math.abs(child.bulk - (parent.bulk * 0.85 + donor.bulk * 0.15)) < 0.04)
+})
