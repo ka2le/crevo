@@ -41,12 +41,13 @@ function App() {
   const spawnAverageCreature = useCrevoStore((state) => state.spawnAverageCreature)
   const spawnRandomCreature = useCrevoStore((state) => state.spawnRandomCreature)
   const resetWorld = useCrevoStore((state) => state.resetWorld)
+  const appShellRef = useRef(null)
   const canvasApiRef = useRef(null)
   const [fullscreenActive, setFullscreenActive] = useState(() => isFullscreenActive())
   const [fullscreenSupported, setFullscreenSupported] = useState(true)
 
   useEffect(() => {
-    setFullscreenSupported(canFullscreen(canvasApiRef.current?.getFullscreenTarget?.()))
+    setFullscreenSupported(canFullscreen(appShellRef.current || canvasApiRef.current?.getFullscreenTarget?.()))
     return subscribeFullscreenChange(() => {
       setFullscreenActive(isFullscreenActive())
     })
@@ -58,7 +59,7 @@ function App() {
   }, [fullscreenActive, fullscreenSupported])
 
   const handleFullscreen = async () => {
-    const target = canvasApiRef.current?.getFullscreenTarget?.() || document.documentElement
+    const target = appShellRef.current || canvasApiRef.current?.getFullscreenTarget?.() || document.documentElement
     setFullscreenSupported(canFullscreen(target))
     try {
       await toggleFullscreen(target)
@@ -73,7 +74,7 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main ref={appShellRef} className="app-shell">
       <div className="rotatable-page">
         <header className="top-bar">
           <div className="control-group left">

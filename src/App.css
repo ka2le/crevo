@@ -81,6 +81,7 @@ body,
 .top-bar {
   top: 0;
   flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .control-group,
@@ -258,17 +259,27 @@ body,
     --button-pad-x: 6px;
     --button-font: 10px;
     --slider-font: 7px;
-    --slider-width: 48px;
-    --stat-min-width: 32px;
+    --slider-width: 44px;
+    --stat-min-width: 30px;
     --stat-pad-y: 3px;
-    --stat-pad-x: 5px;
+    --stat-pad-x: 4px;
     --stat-radius: 8px;
     --stat-label-font: 6px;
-    --stat-value-font: 10px;
+    --stat-value-font: 9px;
+  }
+
+  .top-bar {
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .control-group {
+    gap: 2px;
+    max-width: calc(100vw - 8px);
   }
 
   .mode-toggle {
-    min-width: 124px;
+    min-width: 96px;
   }
 }
 
