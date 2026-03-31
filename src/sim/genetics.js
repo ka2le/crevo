@@ -47,6 +47,13 @@ const applyTraitNudge = (genome, key, amount, rng) => {
 
 const blendGene = (parentValue, donorValue, donorBlend) => clamp(parentValue * (1 - donorBlend) + donorValue * donorBlend)
 
+const applyDonorTraitSwap = (child, donorGenome, rng) => {
+  if (!donorGenome || !rng.chance(config.genetics.donorTraitSwapChance ?? 0.1)) return false
+  const trait = rng.pick(config.genetics.donorTraitSwapTraits ?? TRAIT_KEYS)
+  child[trait] = clamp(donorGenome[trait])
+  return true
+}
+
 const applyRareMutationProfile = (child, rng) => {
   if (!rng.chance(config.genetics.rareMutationChance)) return false
   const profileEntries = Object.entries(config.genetics.rareMutationProfiles)
@@ -204,6 +211,7 @@ export const mutateGenome = ({
     child[key] = clamp(child[key] + rng.normal(0, MUTATION_SIGMA[key] * config.genetics.macroMutationMultiplier))
   }
 
+  applyDonorTraitSwap(child, donorGenome, rng)
   applyRareMutationProfile(child, rng)
 
   child.neckLength = clamp(child.neckLength * 0.72 + 0.01)
