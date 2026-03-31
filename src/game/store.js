@@ -15,7 +15,7 @@ const makeWorld = () => createWorld({ seed: 'crevo-seed-1' })
 export const useCrevoStore = create((set, get) => ({
   world: makeWorld(),
   controls: {
-    mutationStrength: 0.08,
+    mutationStrength: 0.12,
     birthRate: 0.72,
     speed: 1,
     paused: false,
