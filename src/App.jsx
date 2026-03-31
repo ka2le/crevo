@@ -1,6 +1,8 @@
 import './App.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCrevoStore } from './game/store.js'
 import { GameCanvas } from './game/GameCanvas.jsx'
+import { canFullscreen, isFullscreenActive, subscribeFullscreenChange, toggleFullscreen } from './utils/fullscreen.js'
 
 const formatPercent = (value) => `${Math.round(value * 100)}%`
 
@@ -39,6 +41,36 @@ function App() {
   const spawnAverageCreature = useCrevoStore((state) => state.spawnAverageCreature)
   const spawnRandomCreature = useCrevoStore((state) => state.spawnRandomCreature)
   const resetWorld = useCrevoStore((state) => state.resetWorld)
+  const canvasApiRef = useRef(null)
+  const [fullscreenActive, setFullscreenActive] = useState(() => isFullscreenActive())
+  const [fullscreenSupported, setFullscreenSupported] = useState(true)
+
+  useEffect(() => {
+    setFullscreenSupported(canFullscreen(canvasApiRef.current?.getFullscreenTarget?.()))
+    return subscribeFullscreenChange(() => {
+      setFullscreenActive(isFullscreenActive())
+    })
+  }, [])
+
+  const fullscreenLabel = useMemo(() => {
+    if (!fullscreenSupported) return 'expand'
+    return fullscreenActive ? 'shrink' : 'full'
+  }, [fullscreenActive, fullscreenSupported])
+
+  const handleFullscreen = async () => {
+    const target = canvasApiRef.current?.getFullscreenTarget?.() || document.documentElement
+    setFullscreenSupported(canFullscreen(target))
+    try {
+      await toggleFullscreen(target)
+      setFullscreenActive(isFullscreenActive())
+    } catch {
+      const root = document.documentElement
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      root.style.minHeight = '100svh'
+      root.style.height = '100svh'
+      setFullscreenActive(isFullscreenActive())
+    }
+  }
 
   return (
     <main className="app-shell">
@@ -47,6 +79,9 @@ function App() {
           <div className="control-group left">
             <button className="control button-control" onClick={togglePause}>
               {controls.paused ? 'play' : 'pause'}
+            </button>
+            <button className="control button-control accent" onClick={handleFullscreen}>
+              {fullscreenLabel}
             </button>
             <Slider
               label={`mut ${formatPercent(controls.mutationStrength)}`}
@@ -84,7 +119,7 @@ function App() {
 
           <div className="control-group right">
             <button className={`control button-control mode-toggle ${mode === 'explode' ? 'danger' : 'accent'}`} onClick={toggleMode}>
-              {mode === 'multiply' ? 'tap: create · rc: destroy' : 'tap: destroy · rc: create'}
+              {mode === 'multiply' ? 'create' : 'destroy'}
             </button>
             <button className="control button-control accent" onClick={spawnAverageCreature}>
               avg
@@ -98,7 +133,7 @@ function App() {
           </div>
         </header>
 
-        <GameCanvas />
+        <GameCanvas ref={canvasApiRef} />
       </div>
 
       <aside className="portrait-hint" aria-hidden="true">

@@ -321,14 +321,16 @@ const drawAntennae = (ctx, phenotype, headY, headTilt = 0, gaitEnergy = 0) => {
   ctx.strokeStyle = phenotype.colors.limbs
   ctx.lineWidth = Math.max(1, phenotype.legs.thickness * 0.24)
   ctx.lineCap = 'round'
+  const wigglePhase = gaitEnergy * 0.9 + headTilt * 18
   for (const side of [-1, 1]) {
     const startX = side * phenotype.headRadius * 0.26
     const startY = headY - phenotype.headRadius * 0.5
-    const swayX = (headTilt * phenotype.antennaLength * 3.8 + gaitEnergy * side * 1.2)
+    const wiggle = Math.sin(wigglePhase + side * 0.9) * (2.6 + phenotype.antennaLength * 0.04)
+    const swayX = headTilt * phenotype.antennaLength * 3.8 + gaitEnergy * side * 1.2 + wiggle
     const midX = side * phenotype.antennaLength * 0.24 + swayX * 0.45
-    const midY = headY - phenotype.antennaLength * (0.42 + phenotype.antennaCurl * 0.12)
+    const midY = headY - phenotype.antennaLength * (0.42 + phenotype.antennaCurl * 0.12) + Math.cos(wigglePhase + side) * 1.2
     const endX = side * phenotype.antennaLength * (0.52 + phenotype.antennaCurl * 0.18) + swayX
-    const endY = headY - phenotype.antennaLength
+    const endY = headY - phenotype.antennaLength + Math.sin(wigglePhase + side * 1.7) * 1.6
 
     ctx.beginPath()
     ctx.moveTo(startX, startY)

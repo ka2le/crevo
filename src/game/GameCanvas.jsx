@@ -1,15 +1,21 @@
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useCrevoStore } from './store.js'
 import { renderWorld } from '../render/renderer.js'
 import { hitTestCreature, mapPortraitPointer } from '../input/hitTest.js'
 
 const PORTRAIT_QUERY = '(max-width: 760px) and (orientation: portrait)'
 
-export function GameCanvas() {
+export const GameCanvas = forwardRef(function GameCanvas(_, ref) {
   const canvasRef = useRef(null)
+  const wrapperRef = useRef(null)
   const animationFrameRef = useRef(null)
   const lastTimeRef = useRef(0)
   const portraitRef = useRef(false)
+
+  useImperativeHandle(ref, () => ({
+    getFullscreenTarget: () => wrapperRef.current || canvasRef.current,
+    getCanvas: () => canvasRef.current,
+  }), [])
 
   useEffect(() => {
     const resize = () => {
@@ -81,36 +87,38 @@ export function GameCanvas() {
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="game-canvas"
-      onMouseMove={(event) => updatePointer(event.clientX, event.clientY)}
-      onMouseLeave={() => useCrevoStore.getState().setPointer({ x: 0, y: 0, hovered: null })}
-      onClick={(event) => {
-        const id = updatePointer(event.clientX, event.clientY)
-        if (id) performAction(id, true)
-      }}
-      onContextMenu={(event) => {
-        event.preventDefault()
-        const id = updatePointer(event.clientX, event.clientY)
-        if (id) performAction(id, false)
-      }}
-      onTouchStart={(event) => {
-        event.preventDefault()
-        const touch = event.touches[0]
-        updatePointer(touch.clientX, touch.clientY)
-      }}
-      onTouchMove={(event) => {
-        event.preventDefault()
-        const touch = event.touches[0]
-        updatePointer(touch.clientX, touch.clientY)
-      }}
-      onTouchEnd={(event) => {
-        event.preventDefault()
-        const touch = event.changedTouches[0]
-        const id = updatePointer(touch.clientX, touch.clientY)
-        if (id) performAction(id, true)
-      }}
-    />
+    <div ref={wrapperRef} className="game-stage">
+      <canvas
+        ref={canvasRef}
+        className="game-canvas"
+        onMouseMove={(event) => updatePointer(event.clientX, event.clientY)}
+        onMouseLeave={() => useCrevoStore.getState().setPointer({ x: 0, y: 0, hovered: null })}
+        onClick={(event) => {
+          const id = updatePointer(event.clientX, event.clientY)
+          if (id) performAction(id, true)
+        }}
+        onContextMenu={(event) => {
+          event.preventDefault()
+          const id = updatePointer(event.clientX, event.clientY)
+          if (id) performAction(id, false)
+        }}
+        onTouchStart={(event) => {
+          event.preventDefault()
+          const touch = event.touches[0]
+          updatePointer(touch.clientX, touch.clientY)
+        }}
+        onTouchMove={(event) => {
+          event.preventDefault()
+          const touch = event.touches[0]
+          updatePointer(touch.clientX, touch.clientY)
+        }}
+        onTouchEnd={(event) => {
+          event.preventDefault()
+          const touch = event.changedTouches[0]
+          const id = updatePointer(touch.clientX, touch.clientY)
+          if (id) performAction(id, true)
+        }}
+      />
+    </div>
   )
-}
+})
