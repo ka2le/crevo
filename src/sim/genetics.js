@@ -29,10 +29,15 @@ const isOutsideNormalColorBand = (key, value) => {
 }
 
 const inheritColorGene = (key, parentValue, meanValue, sigma, meanPull, lockToParent, rng) => {
-  const outside = isOutsideNormalColorBand(key, parentValue)
-  const appliedMeanPull = outside ? config.genetics.outsideBandMeanPull : meanPull
-  const drifted = parentValue + rng.normal(0, sigma) + (meanValue - parentValue) * appliedMeanPull
-  return clamp(parentValue * lockToParent + drifted * (1 - lockToParent))
+  const safeParent = Number.isFinite(parentValue) ? parentValue : 0.5
+  const safeMean = Number.isFinite(meanValue) ? meanValue : safeParent
+  const safeSigma = Number.isFinite(sigma) ? sigma : 0
+  const safeMeanPull = Number.isFinite(meanPull) ? meanPull : 0
+  const safeLock = Number.isFinite(lockToParent) ? lockToParent : 1
+  const outside = isOutsideNormalColorBand(key, safeParent)
+  const appliedMeanPull = outside ? config.genetics.outsideBandMeanPull : safeMeanPull
+  const drifted = safeParent + rng.normal(0, safeSigma) + (safeMean - safeParent) * appliedMeanPull
+  return clamp(safeParent * safeLock + drifted * (1 - safeLock))
 }
 
 const applyTraitNudge = (genome, key, amount, rng) => {
@@ -165,7 +170,7 @@ export const mutateGenome = ({
   mutationStrength,
   rng,
   context = 'natural',
-  donorBlend = config.genetics.secondaryParentBlend,
+  donorBlend = config.genetics.secondaryParentBlend ?? 0.15,
 }) => {
   const child = {}
   for (const key of TRAIT_KEYS) {
@@ -204,12 +209,12 @@ export const mutateGenome = ({
   child.neckLength = clamp(child.neckLength * 0.72 + 0.01)
   child.bodySquareness = clamp(child.bodySquareness * config.genetics.bodySquarenessDamping + parentGenome.bodySquareness * 0.15)
   child.height = clamp(child.height * (1 - config.genetics.heightParentBlend) + parentGenome.height * config.genetics.heightParentBlend)
-  child.hueA = blendGene(child.hueA, parentGenome.hueA, config.genetics.colorParentBias)
-  child.hueB = blendGene(child.hueB, parentGenome.hueB, config.genetics.colorParentBias)
-  child.satA = blendGene(child.satA, parentGenome.satA, config.genetics.colorParentBias)
-  child.satB = blendGene(child.satB, parentGenome.satB, config.genetics.colorParentBias)
-  child.valA = blendGene(child.valA, parentGenome.valA, config.genetics.colorParentBias)
-  child.valB = blendGene(child.valB, parentGenome.valB, config.genetics.colorParentBias)
+  child.hueA = blendGene(child.hueA, parentGenome.hueA, config.genetics.colorParentBias ?? 0.75)
+  child.hueB = blendGene(child.hueB, parentGenome.hueB, config.genetics.colorParentBias ?? 0.75)
+  child.satA = blendGene(child.satA, parentGenome.satA, config.genetics.colorParentBias ?? 0.75)
+  child.satB = blendGene(child.satB, parentGenome.satB, config.genetics.colorParentBias ?? 0.75)
+  child.valA = blendGene(child.valA, parentGenome.valA, config.genetics.colorParentBias ?? 0.75)
+  child.valB = blendGene(child.valB, parentGenome.valB, config.genetics.colorParentBias ?? 0.75)
   child.hairiness = clamp(child.hairiness * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
   child.antennaFluff = clamp(child.antennaFluff * rng.range(config.genetics.hairDampingMin, config.genetics.hairDampingMax))
   child.monochromeTendency = clamp(Math.max(child.monochromeTendency, config.genetics.monochromeFloor * (1 - child.rainbowness * 0.85)))
